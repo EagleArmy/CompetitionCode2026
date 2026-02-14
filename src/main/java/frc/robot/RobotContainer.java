@@ -26,6 +26,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -52,6 +53,7 @@ public class RobotContainer {
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
     public final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+    public final LimelightSubsystem m_LimelightSubsystem = new LimelightSubsystem();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -77,6 +79,18 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
+        
+        joystick.y().debounce(0.2).whileTrue(
+            drivetrain.applyRequest(() -> forwardStraight
+                .withRotationalRate(-m_LimelightSubsystem.getCenterReefTx("limelight")/Constants.VisionProfile.hubProportionalTx)
+                //.withVelocityX(vision.getHubTA("limelight")*.5) // Reduced speed for fine adjustments
+                .withVelocityY(joystick.getLeftY())
+            )
+        );
+
+
+
+
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -90,12 +104,12 @@ public class RobotContainer {
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
 
-        joystick.povUp().whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0.5).withVelocityY(0))
-        );
-        joystick.povDown().whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(-0.5).withVelocityY(0))
-        );
+        // joystick.povUp().whileTrue(drivetrain.applyRequest(() ->
+        //     forwardStraight.withVelocityX(0.5).withVelocityY(0))
+        // );
+        // joystick.povDown().whileTrue(drivetrain.applyRequest(() ->
+        //     forwardStraight.withVelocityX(-0.5).withVelocityY(0))
+        // );
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.

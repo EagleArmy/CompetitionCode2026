@@ -84,7 +84,7 @@ public class Constants {
         public static int redReedRightPipeline = 5;
 
         /* Proportional limits for front limelight */
-        public static double reefProportionalTx = 28;
+        public static double hubProportionalTx = 10;
         public static double algaeProportionalTx = 7.5;
     }
 
