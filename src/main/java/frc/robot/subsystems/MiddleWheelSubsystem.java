@@ -55,7 +55,7 @@ public class MiddleWheelSubsystem extends SubsystemBase {
 
     public void start()
     {
-        MiddleWheelMotor.set(-MiddleWheelspeed);
+        MiddleWheelMotor.set(MiddleWheelspeed);
         System.out.println("MiddleWheel Speed: " + MiddleWheelspeed);
     }
 

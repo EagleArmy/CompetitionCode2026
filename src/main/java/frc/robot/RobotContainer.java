@@ -27,6 +27,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.subsystems.MiddleWheelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -53,6 +55,8 @@ public class RobotContainer {
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
     public final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+    public final LimelightSubsystem m_LimelightSubsystem = new LimelightSubsystem();
+    public final MiddleWheelSubsystem m_MiddleWheelSubsystem = new MiddleWheelSubsystem();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
