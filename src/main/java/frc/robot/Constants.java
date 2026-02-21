@@ -66,6 +66,12 @@ public class Constants {
     public static final double hopperSpeed = 0.5;
 
   }
+
+   public static final class MiddleWheelConstants {
+    public static final int MiddleWheelMotorID = 3;
+    public static final double MiddleWheelSpeed = 0.65;
+  }
+  
       public class VisionProfile {
         /* Limelight names */
         public static String frontLimelight = "limelight-front";
