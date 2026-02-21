@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -59,6 +60,19 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+
+
+        NamedCommands.registerCommand("hopperIntake ", new HopperIntakeCommand(m_HopperSubsystem,m_IntakeSubsystem));
+
+
+
+
+
+
+
+
+
+
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 
@@ -83,7 +97,7 @@ public class RobotContainer {
         joystick.y().debounce(0.2).whileTrue(
             drivetrain.applyRequest(() -> forwardStraight
                 .withRotationalRate(-m_LimelightSubsystem.getCenterReefTx("limelight")/Constants.VisionProfile.hubProportionalTx)
-                //.withVelocityX(vision.getHubTA("limelight")*.5) // Reduced speed for fine adjustments
+                .withVelocityX(m_LimelightSubsystem.getHubTA("limelight")*.5) // Reduced speed for fine adjustments
                 .withVelocityY(joystick.getLeftY())
             )
         );
@@ -125,6 +139,9 @@ public class RobotContainer {
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        
+
+
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

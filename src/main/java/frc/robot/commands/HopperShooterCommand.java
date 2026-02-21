@@ -24,6 +24,7 @@ public class HopperShooterCommand extends Command{
 
         m_HopperSubsystem.start();
         m_ShooterSubsystem.set(.55);
+
     }
 
     @Override

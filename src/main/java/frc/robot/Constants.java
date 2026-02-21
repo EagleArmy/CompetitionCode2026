@@ -54,6 +54,7 @@ public class Constants {
   public static final class ShooterConstants {
     public static final int ShooterMotorID = 10;
     public static final int ShooterMotorID2 = 2;
+    public static final int ShooterMotorID3 = 4;
     
     public static final double shooterSpeed = 0.55;
   }
@@ -84,7 +85,7 @@ public class Constants {
         public static int redReedRightPipeline = 5;
 
         /* Proportional limits for front limelight */
-        public static double hubProportionalTx = 10;
+        public static double hubProportionalTx = 9;
         public static double algaeProportionalTx = 7.5;
     }
 
