@@ -18,103 +18,94 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.IntakeConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class IntakeSubsystem extends SubsystemBase {
-
-    private final TalonFX IntakeMotor = new TalonFX(IntakeConstants.IntakeMotorID);
-    private final TalonFX HopperMotor = new TalonFX(IntakeConstants.HopperMotorID);
-    //public final double intakeSpeed = IntakeConstants.intakeSpeed;
-    public double intakeSpeed = IntakeConstants.intakeSpeed;
-    public double hopperSpeed = IntakeConstants.hopperSpeed;
+public class IntakeSubsystem extends SubsystemBase
+{
+    public final TalonFX IntakeMotor = new TalonFX(IntakeConstants.IntakeMotorID);
+    //private final TalonFX intakeMotor = new TalonFX(intakeConstants.testMotorID);
+    public double intakespeed;
 
     
-    public IntakeSubsystem() 
-    {
-       addChild("IntakeMotor", IntakeMotor);
+    public IntakeSubsystem() {
 
-       var IntakeMotorConfiguration = new TalonFXConfiguration();
-       IntakeMotorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-       IntakeMotorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       IntakeMotor.getConfigurator().apply( IntakeMotorConfiguration );
+    intakespeed = 1.0;
+    // Let's name everything on the LiveWindow
+    addChild("IntakeMotor", IntakeMotor);
 
-       var HopperMotorConfiguration = new TalonFXConfiguration();
-       HopperMotorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-       HopperMotorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-       IntakeMotor.getConfigurator().apply( HopperMotorConfiguration );
 
-      var slot0ConfigsIntake = IntakeMotorConfiguration.Slot0;
-    slot0ConfigsIntake.kS = 0.25; // Add 0.25 V output to overcome static friction
-    slot0ConfigsIntake.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
-    slot0ConfigsIntake.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0ConfigsIntake.kP = 4.8; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
-    slot0ConfigsIntake.kI = 0; // no output for integrated error
-    slot0ConfigsIntake.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+    var intakeMotorConfiguration = new TalonFXConfiguration();
+    intakeMotorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    intakeMotorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    IntakeMotor.getConfigurator().apply( intakeMotorConfiguration );
+        
+    // // set slot 0 gains
+    var slot0ConfigsLeft = intakeMotorConfiguration.Slot0;
+    slot0ConfigsLeft.kS = 0.25; // Add 0.25 V output to overcome static friction
+    slot0ConfigsLeft.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
+    slot0ConfigsLeft.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+    slot0ConfigsLeft.kP = 4.8; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
+    slot0ConfigsLeft.kI = 0; // no output for integrated error
+    slot0ConfigsLeft.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
 
-    var slot0ConfigsHopperMotor = HopperMotorConfiguration.Slot0;
-    slot0ConfigsHopperMotor.kS = 0.25; // Add 0.25 V output to overcome static friction
-    slot0ConfigsHopperMotor.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
-    slot0ConfigsHopperMotor.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0ConfigsHopperMotor.kP = 4.8; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
-    slot0ConfigsHopperMotor.kI = 0; // no output for integrated error
-    slot0ConfigsHopperMotor.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
-
-    //  set Motion Magic settings
-    var motionMagicConfigsIntake = IntakeMotorConfiguration.MotionMagic;
-    motionMagicConfigsIntake.MotionMagicCruiseVelocity = 20; // Target cruise velocity of 80 rps
-    motionMagicConfigsIntake.MotionMagicAcceleration = 40; // Target acceleration of 160 rps/s (0.5 seconds)
-    motionMagicConfigsIntake.MotionMagicJerk = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
+    // // set Motion Magic settings
+    var motionMagicConfigsLeft = intakeMotorConfiguration.MotionMagic;
+    motionMagicConfigsLeft.MotionMagicCruiseVelocity = 20; // Target cruise velocity of 80 rps
+    motionMagicConfigsLeft.MotionMagicAcceleration = 40; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigsLeft.MotionMagicJerk = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
     // 20, 40, 400
     // 8000, 16000, 160000
 
-     //  set Motion Magic settings
-    var motionMagicConfigsHopperMotor = HopperMotorConfiguration.MotionMagic;
-    motionMagicConfigsHopperMotor.MotionMagicCruiseVelocity = 20; // Target cruise velocity of 80 rps
-    motionMagicConfigsHopperMotor.MotionMagicAcceleration = 40; // Target acceleration of 160 rps/s (0.5 seconds)
-    motionMagicConfigsHopperMotor.MotionMagicJerk = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
-    // 20, 40, 400
-    // 8000, 16000, 160000
+    // // set Motion Magic settings
+    var motionMagicConfigsRight = intakeMotorConfiguration.MotionMagic;
+    motionMagicConfigsRight.MotionMagicCruiseVelocity = 20; // Target cruise velocity of 80 rps
+    motionMagicConfigsRight.MotionMagicAcceleration = 40; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigsRight.MotionMagicJerk = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-    }
-
-    public void start()
-    {
-        IntakeMotor.set(-intakeSpeed);
-        HopperMotor.set(intakeSpeed);
-        System.out.println("Intake Speed: " + intakeSpeed);
+    IntakeMotor.getConfigurator().apply(intakeMotorConfiguration);
+   // CoralRightMotor.getConfigurator().apply(CoralRightMotorConfiguration);
     }
 
-    public void reverse() 
-    {
-        IntakeMotor.set(intakeSpeed);
-        HopperMotor.set(-intakeSpeed);
+    public Angle getLeftEncoderPosition() {
+        var rotorPosSignal = IntakeMotor.getRotorPosition();
+        var rotorPos = rotorPosSignal.getValue();
+        return rotorPos;
+      }
+        public void start()
+        {
+            IntakeMotor.set(intakespeed);
+            System.out.println("intake Speed: " + intakespeed);
+
+        }
+
+        public void reverse() {
+            IntakeMotor.set(-intakespeed);
+        }
+
+        public void stop() {
+            IntakeMotor.set( 0 );
+           // CoralRightMotor.set( 0 );
+            //extramotor.set(0);
+          }
+        
+        public void increaseintakespeed() {
+            intakespeed += 0.05;
+            System.out.println("intake Speed: " + intakespeed);
+          }
+          public void decreaseintakespeed() {
+            intakespeed -= 0.05;
+            System.out.println("intake Speed: " + intakespeed);
+        
+          }
+          public void log() {
+            // SmartDashboard.putData("CoralMotor", CoralMotor);
+            //System.out.println("Value: " + getEnterSensorRange());
+          }
+          
+          /** Call log method every loop. */
+          @Override
+          public void periodic() {
+            //SmartDashboard.putNumber("Extender Position", getEncoderPosition());
+            log();
+          }
     }
 
-    public void stop()
-    {
-        IntakeMotor.set( 0 );
-        HopperMotor.set(0);
-    }
-    public void increasetestingspeed() 
-    {
-        intakeSpeed += 0.05;
-        System.out.println("Testing Speed: " + intakeSpeed);
-    }
-    public void decreasetestingspeed() 
-    {
-        intakeSpeed -= 0.05;
-        System.out.println("Testing Speed: " + intakeSpeed);
-    }
 
-    public void setIntakeHopperSpeed(double a, double b)
-    {
-        intakeSpeed = a;
-        hopperSpeed = b;
-    }
-    
-    @Override
-    public void periodic() 
-    {
-      //SmartDashboard.putNumber("Extender Position", getEncoderPosition());
-      //log();
-    }
-
-}

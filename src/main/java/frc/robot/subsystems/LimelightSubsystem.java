@@ -36,37 +36,20 @@ public class LimelightSubsystem extends SubsystemBase {
    * @return double, limelight Tx
    */
   
-  public static boolean TAmove(String Limelight){
-  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){
-    return false;
-  }
-  else{
-    return true;
-  }
-}
-//measure values on actual roboto
 public double getHubTA(String Limelight){
+  if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
     setLimelightPipeline(Limelight, 0);
-  
-   if(TAmove(Limelight) == true){
-  if(LimelightHelpers.getTA(Limelight) < 0.5){
-    ShooterSubsystem.shooterSpeedHub();
-    return 0.5;
+    return LimelightHelpers.getTY(Limelight);
   }
   else{
-    ShooterSubsystem.shooterSpeedHub();
-    return -0.5;
+    setLimelightPipeline(Limelight, 0);
+    return LimelightHelpers.getTY(Limelight);
   }
- }
-  else {
-    return 0;
-  }
-
 }
 
 
 
- public double getHubTx(String limelight) {
+ public double getCenterReefTx(String limelight) {
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
       setLimelightPipeline(limelight, VisionProfile.blueReefCenterPipeline);
 
@@ -88,7 +71,6 @@ public double getHubTA(String Limelight){
       return false;
     }
   }
-  
 
   @Override
   // This method will be called once per scheduler run

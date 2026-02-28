@@ -1,353 +1,206 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.BaseStatusSignal;
+import edu.wpi.first.util.sendable.SendableRegistry;
+
+//import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.OpenLoopRampsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.*;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.measure.Angle;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ElevatorConstants;
-import yams.mechanisms.positional.Elevator;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * Elevator subsystem using TalonFX with Krakenx44 motor
- */
-@Logged(name = "ElevatorSubsystem")
+
 public class ElevatorSubsystem extends SubsystemBase {
+  
+  private final TalonFX ElevatorLeftMotor = new TalonFX(ElevatorConstants.kElevatorLeftMotorID);
+  //private final TalonFX ElevatorRightMotor = new TalonFX(ElevatorConstants.kElevatorRightMotorID);
+  public double leftPos;
+  public double rightPos;
+  // private final MotionMagicVoltage m_LeftRequest = new MotionMagicVoltage(ElevatorConstants.kFirstPosition);
+  // private final MotionMagicVoltage m_RightRequest = new MotionMagicVoltage(ElevatorConstants.kFirstPosition);
+  public double switchPos;
+  //private double LevelFourPosition;
 
-  // Constants
-  private final DCMotor dcMotor = new DCMotor(
-    12,
-    4.05,
-    275,
-    1.4,
-    Units.rotationsPerMinuteToRadiansPerSecond(7530),
-    1
-  ); // Kraken X44;
-  private final int canID = 1;
-  private final double gearRatio = 15;
-  private final double kP = 1;
-  private final double kI = 0;
-  private final double kD = 0;
-  private final double kS = 0;
-  private final double kV = 0;
-  private final double kA = 0;
-  private final double kG = 0;
-  private final double maxVelocity = 1; // meters per second
-  private final double maxAcceleration = 1; // meters per second squared
-  private final boolean brakeMode = true;
-  private final boolean enableStatorLimit = true;
-  private final int statorCurrentLimit = 40;
-  private final boolean enableSupplyLimit = false;
-  private final double supplyCurrentLimit = 40;
-  private final double drumRadius = 0.0254; // meters
-  private final double minheight = 0;
-  private final double maxheight = 1;
-
-  // Feedforward
-  private final ElevatorFeedforward feedforward = new ElevatorFeedforward(
-    kS,
-    kG,
-    kV,
-    kA
-  );
-
-  // Motor controller
-  private final TalonFX motor;
-  private final PositionVoltage positionRequest;
-  private final VelocityVoltage velocityRequest;
-  private final StatusSignal<Angle> positionSignal;
-  private final StatusSignal<AngularVelocity> velocitySignal;
-  private final StatusSignal<Voltage> voltageSignal;
-  private final StatusSignal<Current> statorCurrentSignal;
-  private final StatusSignal<Temperature> temperatureSignal;
-
-  // Simulation
-  private final ElevatorSim elevatorSim;
-
-  /**
-   * Creates a new Elevator Subsystem.
-   */
   public ElevatorSubsystem() {
-    // Initialize motor controller
-    motor = new TalonFX(ElevatorConstants.kElevatorLeftMotorID);
+    // LevelFourPosition = ElevatorConstants.kFourthPosition;
+    // ElevatorLeftMotor.setPosition( ElevatorConstants.kStartPosition );
+    // ElevatorRightMotor.setPosition( ElevatorConstants.kStartPosition );
+    //leftPos = getLeftEncoderPosition().baseUnitMagnitude();     //degrees
+    //rightPos = getRightEncoderPosition().baseUnitMagnitude();   //degrees
+    
+    // Let's name everything on the LiveWindow
+    addChild("ElevatorLeftMotor", ElevatorLeftMotor);
+    //addChild("ElevatorLeftMotor", ElevatorRightMotor);
 
-    // Create control requests
-    positionRequest = new PositionVoltage(0).withSlot(0);
-    velocityRequest = new VelocityVoltage(0).withSlot(0);
+    var ElevatorLeftMotorConfiguration = new TalonFXConfiguration();
+    ElevatorLeftMotorConfiguration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    ElevatorLeftMotorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    ElevatorLeftMotor.getConfigurator().apply( ElevatorLeftMotorConfiguration );
 
-    // get status signals
-    positionSignal = motor.getPosition();
-    velocitySignal = motor.getVelocity();
-    voltageSignal = motor.getMotorVoltage();
-    statorCurrentSignal = motor.getStatorCurrent();
-    temperatureSignal = motor.getDeviceTemp();
+    var ElevatorRightMotorConfiguration = new TalonFXConfiguration();
+    ElevatorRightMotorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    ElevatorRightMotorConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    //ElevatorRightMotor.getConfigurator().apply( ElevatorRightMotorConfiguration );
 
-    TalonFXConfiguration config = new TalonFXConfiguration();
+    // // set slot 0 gains
+    var slot0ConfigsLeft = ElevatorLeftMotorConfiguration.Slot0;
+    slot0ConfigsLeft.kS = 0.25; // Add 0.25 V output to overcome static friction
+    slot0ConfigsLeft.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
+    slot0ConfigsLeft.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+    slot0ConfigsLeft.kP = 4.8; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
+    slot0ConfigsLeft.kI = 0; // no output for integrated error
+    slot0ConfigsLeft.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
 
-    // Configure PID for slot 0
-    Slot0Configs slot0 = config.Slot0;
-    slot0.kP = kP;
-    slot0.kI = kI;
-    slot0.kD = kD;
-    slot0.GravityType = GravityTypeValue.Elevator_Static;
-    slot0.kS = kS;
-    slot0.kV = kV;
-    slot0.kA = kA;
-    slot0.kG = kG;
+    // var slot0ConfigsRight = ElevatorRightMotorConfiguration.Slot0;
+    // slot0ConfigsRight.kS = 0.25; // Add 0.25 V output to overcome static friction
+    // slot0ConfigsRight.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
+    // slot0ConfigsRight.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+    // slot0ConfigsRight.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+    // slot0ConfigsRight.kI = 0; // no output for integrated error
+    // slot0ConfigsRight.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
 
-    // Set current limits
-    CurrentLimitsConfigs currentLimits = config.CurrentLimits;
-    currentLimits.StatorCurrentLimit = statorCurrentLimit;
-    currentLimits.StatorCurrentLimitEnable = enableStatorLimit;
-    currentLimits.SupplyCurrentLimit = supplyCurrentLimit;
-    currentLimits.SupplyCurrentLimitEnable = enableSupplyLimit;
+    // // set Motion Magic settings
+    var motionMagicConfigsLeft = ElevatorLeftMotorConfiguration.MotionMagic;
+    motionMagicConfigsLeft.MotionMagicCruiseVelocity = 7000; // Target cruise velocity of 80 rps
+    motionMagicConfigsLeft.MotionMagicAcceleration = 14000; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigsLeft.MotionMagicJerk = 90000; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
-    // Set brake mode
-    config.MotorOutput.NeutralMode = brakeMode
-      ? NeutralModeValue.Brake
-      : NeutralModeValue.Coast;
-
-    // Apply gear ratio
-    config.Feedback.SensorToMechanismRatio = gearRatio;
-
-    // Apply configuration
-    motor.getConfigurator().apply(config);
-
-    // Reset encoder position
-    motor.setPosition(0);
-
-    // Initialize simulation
-    elevatorSim = new ElevatorSim(
-      dcMotor, // Motor type
-      gearRatio,
-      5, // Carriage mass (kg)
-      drumRadius, // Drum radius (m)
-      0, // Min height (m)
-      1, // Max height (m)
-      true, // Simulate gravity
-      0 // Starting height (m)
-    );
+    // // set Motion Magic settings
+    var motionMagicConfigsRight = ElevatorRightMotorConfiguration.MotionMagic;
+    motionMagicConfigsRight.MotionMagicCruiseVelocity = 7000; // Target cruise velocity of 80 rps
+    motionMagicConfigsRight.MotionMagicAcceleration = 14000; // Target acceleration of 160 rps/s (0.5 seconds)
+    motionMagicConfigsRight.MotionMagicJerk = 90000; // Target jerk of 1600 rps/s/s (0.1 seconds
+    
+    ElevatorLeftMotor.getConfigurator().apply(ElevatorLeftMotorConfiguration);
+    //ElevatorRightMotor.getConfigurator().apply(ElevatorRightMotorConfiguration);
+    System.out.println("Starting Left Position: " + leftPos + "        Starting Right Position: " + rightPos);
   }
 
-  /**
-   * Update simulation and telemetry.
-   */
+
+  // public void firstLevel() {
+  //   ElevatorLeftMotor.setControl(m_LeftRequest.withPosition(ElevatorConstants.kFirstPosition));
+  //   leftPos = getLeftEncoderPosition().baseUnitMagnitude();
+  //   ElevatorRightMotor.setControl(m_RightRequest.withPosition(ElevatorConstants.kFirstPosition));
+  //   rightPos = getRightEncoderPosition().baseUnitMagnitude();
+  // }
+  // public void secondLevel() {
+  //   ElevatorLeftMotor.setControl(m_LeftRequest.withPosition(ElevatorConstants.kSecondPosition));
+  //   leftPos = getLeftEncoderPosition().baseUnitMagnitude();
+  //   ElevatorRightMotor.setControl(m_RightRequest.withPosition(ElevatorConstants.kSecondPosition));
+  //   rightPos = getRightEncoderPosition().baseUnitMagnitude();
+  // }
+  // public void thirdLevel() {
+  //   ElevatorLeftMotor.setControl(m_LeftRequest.withPosition(ElevatorConstants.kThirdPosition));
+  //   leftPos = getLeftEncoderPosition().baseUnitMagnitude();
+  //   ElevatorRightMotor.setControl(m_RightRequest.withPosition(ElevatorConstants.kThirdPosition));
+  //   rightPos = getRightEncoderPosition().baseUnitMagnitude();
+  // }
+  // public void fourthLevel() {
+  //   ElevatorLeftMotor.setControl(m_LeftRequest.withPosition(ElevatorConstants.kFourthPosition));
+  //   leftPos = getLeftEncoderPosition().baseUnitMagnitude();
+  //   ElevatorRightMotor.setControl(m_RightRequest.withPosition(ElevatorConstants.kFourthPosition));
+  //   rightPos = getRightEncoderPosition().baseUnitMagnitude();
+  // }
+
+  // public void startingPos() {
+  //   ElevatorLeftMotor.setControl(m_LeftRequest.withPosition(ElevatorConstants.kStartPosition));
+  //   leftPos = getLeftEncoderPosition().baseUnitMagnitude();
+  //   ElevatorRightMotor.setControl(m_RightRequest.withPosition(ElevatorConstants.kStartPosition));
+  //   rightPos = getRightEncoderPosition().baseUnitMagnitude();
+  // }
+  
+
+  // public void moveToPos() {
+  //   ElevatorLeftMotor.setControl(m_LeftRequest.withPosition(switchPos));
+  //   leftPos = getLeftEncoderPosition().baseUnitMagnitude();
+  //   ElevatorRightMotor.setControl(m_RightRequest.withPosition(switchPos));
+  //   rightPos = getRightEncoderPosition().baseUnitMagnitude();
+  // }
+
+
+  public void moveUp() {
+    ElevatorLeftMotor.set(-0.2);
+    //ElevatorRightMotor.set(0.2);
+  }
+  public void moveDown() {
+    ElevatorLeftMotor.set(0.15);
+    //ElevatorRightMotor.set(-0.15);
+  }
+  public void manualstop() {
+    ElevatorLeftMotor.set(0);
+    //ElevatorRightMotor.set(0);
+    //System.out.println("Left position: " + getleftPos());
+    //System.out.println("Right Position!!!: " + getrightPos());
+  }
+
+
+  // public double getleftPos() {
+  //   return leftPos;
+  // }
+  // public double getrightPos() {
+  //   return rightPos;
+  // }
+
+
+  // public Angle getLeftEncoderPosition() {
+  //   var rotorPosSignal = ElevatorLeftMotor.getRotorPosition();
+  //   var rotorPos = rotorPosSignal.getValue();
+  //   return rotorPos;
+  //}
+  // public Angle getRightEncoderPosition() {
+  //   var rotorPosSignal = ElevatorRightMotor.getRotorPosition();
+  //   var rotorPos = rotorPosSignal.getValue();
+  //   return rotorPos;
+  // }
+
+
+  // public void increaseLFourPos() {
+  //   System.out.println("L4 Elevator Pos: " + getLFourPos()) ;
+  //   LevelFourPosition += 0.1;
+  // }
+  // public void decreaseLFourPos() {
+  //   System.out.println("L4 Elevator Pos: " + getLFourPos()) ;
+  //   LevelFourPosition -= 0.1;
+  // }
+
+
+
+
+
+  // public void setLeftEncoderPosition( Angle newLeftPosition) {
+  //   leftMotorPosition = newLeftPosition;
+  // }
+  // public void setRightEncoderPosition( Angle newRightPosition) {
+  //   rightMotorPosition = newRightPosition;
+  // }
+
+
+
+  public void log() {
+    // System.out.println("Current Left Position: " + leftPos + "        Current Right Position: " + rightPos);
+    // SmartDashboard.putData("ElevatorMotor", ElevatorMotor);
+  }
+  
+  /** Call log method every loop. */
   @Override
   public void periodic() {
-    BaseStatusSignal.refreshAll(
-      positionSignal,
-      velocitySignal,
-      voltageSignal,
-      statorCurrentSignal,
-      temperatureSignal
-    );
+    //SmartDashboard.putNumber("Extender Position", getEncoderPosition());
+    log();
   }
 
-  /**
-   * Update simulation.
-   */
-  @Override
-  public void simulationPeriodic() {
-    // Meters to Rotations Ratio
-    double positionToRotations = (1 / (2.0 * Math.PI * drumRadius)) * gearRatio;
-
-    // Set input voltage from motor controller to simulation
-    // Note: This may need to be talonfx.getSimState().getMotorVoltage() as the input
-    //elevatorSim.setInput(dcMotor.getVoltage(dcMotor.getTorque(elevatorSim.getCurrentDrawAmps()), elevatorSim.getVelocityMetersPerSecond() * positionToRotations * 2 * Math.PI));
-    // elevatorSim.setInput(getVoltage());
-
-    // Use motor voltage for TalonFX simulation input
-    elevatorSim.setInput(motor.getSimState().getMotorVoltage());
-
-    // Update simulation by 20ms
-    elevatorSim.update(0.020);
-
-    // Convert meters to motor rotations
-    double motorPosition =
-      elevatorSim.getPositionMeters() * positionToRotations;
-    double motorVelocity =
-      elevatorSim.getVelocityMetersPerSecond() * positionToRotations;
-
-    motor.getSimState().setRawRotorPosition(motorPosition);
-    motor.getSimState().setRotorVelocity(motorVelocity);
-  }
-
-  /**
-   * Get the current position in the Rotations.
-   * @return Position in Rotations
-   */
-  @Logged(name = "Position/Rotations")
-  public double getPosition() {
-    // Rotations
-    return positionSignal.getValueAsDouble();
-  }
-
-  /**
-   * Get the current velocity in rotations per second.
-   * @return Velocity in rotations per second
-   */
-  @Logged(name = "Velocity")
-  public double getVelocity() {
-    return velocitySignal.getValueAsDouble();
-  }
-
-  /**
-   * Get the current applied voltage.
-   * @return Applied voltage
-   */
-  @Logged(name = "Voltage")
-  public double getVoltage() {
-    return voltageSignal.getValueAsDouble();
-  }
-
-  /**
-   * Get the current motor current.
-   * @return Motor current in amps
-   */
-  public double getCurrent() {
-    return statorCurrentSignal.getValueAsDouble();
-  }
-
-  /**
-   * Get the current motor temperature.
-   * @return Motor temperature in Celsius
-   */
-  public double getTemperature() {
-    return temperatureSignal.getValueAsDouble();
-  }
-
-  /**
-   * Set elevator position.
-   * @param position The target position in meters
-   */
-  public void setPosition(double position) {
-    setPosition(position, 0);
-  }
-
-  /**
-   * Set elevator position with acceleration.
-   * @param position The target position in meters
-   * @param acceleration The acceleration in meters per second squared
-   */
-  public void setPosition(double position, double acceleration) {
-    // Convert meters to rotations
-    double positionRotations = position / (2.0 * Math.PI * drumRadius);
-
-    double ffVolts = feedforward.calculate(getVelocity(), acceleration);
-    //motor.setControl(positionRequest.withPosition(positionRotations).withFeedForward(ffVolts));
-    motor.setControl(positionRequest.withPosition(positionRotations));
-  }
-
-  /**
-   * Set elevator velocity.
-   * @param velocity The target velocity in meters per second
-   */
-  public void setVelocity(double velocity) {
-    setVelocity(velocity, 0);
-  }
-
-  /**
-   * Set elevator velocity with acceleration.
-   * @param velocity The target velocity in meters per second
-   * @param acceleration The acceleration in meters per second squared
-   */
-  public void setVelocity(double velocity, double acceleration) {
-    // Convert meters/sec to rotations/sec
-    double velocityRotations = velocity / (2.0 * Math.PI * drumRadius);
-
-    double ffVolts = feedforward.calculate(getVelocity(), acceleration);
-    //motor.setControl(velocityRequest.withVelocity(velocityRotations).withFeedForward(ffVolts));
-    motor.setControl(velocityRequest.withVelocity(velocityRotations));
-  }
-
-  /**
-   * Set motor voltage directly.
-   * @param voltage The voltage to apply
-   */
-  public void setVoltage(double voltage) {
-    motor.setVoltage(voltage);
-  }
-
-  /**
-   * Get the elevator simulation for testing.
-   * @return The elevator simulation model
-   */
-  public ElevatorSim getSimulation() {
-    return elevatorSim;
-  }
-
-  public double getMinHeightMeters() {
-    return minheight;
-  }
-
-  public double getMaxHeightMeters() {
-    return maxheight;
-  }
-
-  /**
-   * Creates a command to set the elevator to a specific height.
-   * @param heightMeters The target height in meters
-   * @return A command that sets the elevator to the specified height
-   */
-  public Command setHeightCommand(double heightMeters) {
-    return runOnce(() -> setPosition(heightMeters));
-  }
-
-//   public Command setHeightandStop() {
-//     return runOnce(() -> set))
-//   }
-
-  /**
-   * Creates a command to move the elevator to a specific height with a profile.
-   * @param heightMeters The target height in meters
-   * @return A command that moves the elevator to the specified height
-   */
-  public Command moveToHeightCommand(double heightMeters) {
-    return run(() -> {
-      double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
-      double error = heightMeters - currentHeight;
-      double velocity =
-        Math.signum(error) * Math.min(Math.abs(error) * 2.0, maxVelocity);
-      setVelocity(velocity);
-    }).until(() -> {
-        double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
-        return Math.abs(heightMeters - currentHeight) < 0.02; // 2cm tolerance
-      });
-  }
-
-  /**
-   * Creates a command to stop the elevator.
-   * @return A command that stops the elevator
-   */
-  public Command stopCommand() {
-    return runOnce(() -> setVelocity(0));
-  }
-
-  /**
-   * Creates a command to move the elevator at a specific velocity.
-   * @param velocityMetersPerSecond The target velocity in meters per second
-   * @return A command that moves the elevator at the specified velocity
-   */
-  public Command moveAtVelocityCommand(double velocityMetersPerSecond) {
-    return run(() -> setVelocity(velocityMetersPerSecond));
-  }
 }

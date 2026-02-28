@@ -78,7 +78,6 @@ public class MiddleWheelSubsystem extends SubsystemBase {
         MiddleWheelspeed -= 0.05;
         System.out.println("Testing Speed: " + MiddleWheelspeed);
     }
-    
 
     @Override
     public void periodic() 
