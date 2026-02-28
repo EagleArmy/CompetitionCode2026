@@ -3,6 +3,9 @@
   "robotLength": 0.739,
   "holonomicMode": true,
   "pathFolders": [
+    "Get Out Center",
+    "G.O. Left Paths",
+    "Get Out Right",
     "Paths Left",
     "Paths Right"
   ],

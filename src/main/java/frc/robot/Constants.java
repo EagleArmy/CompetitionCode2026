@@ -51,26 +51,34 @@ public class Constants {
     //public static final double kFourthPositionAuto = 52;
   }
 
-  public static final class ShooterConstants {
-    public static final int ShooterMotorID = 10;
+  public static class ShooterConstants {
+    // public static final int ShooterMotorID = 10;
+    public static final int ShooterMotorID = 99; //testing
     public static final int ShooterMotorID2 = 2;
-    public static final int ShooterMotorID3 = 4;
     
-    public static final double shooterSpeed = 0.55;
+    public static double shooterSpeed = 0.55;
   }
 
-  public static final class IntakeConstants{
-    public static final int IntakeMotorID = 8;
-    public static final double intakeSpeed = 1.0;
+  public static class IntakeConstants{
+    public static final int IntakeMotorID = 9;
+    public static final int HopperMotorID = 8;
+    public static double intakeSpeed = 1.0;
+    public static double hopperSpeed = 0.5;
+    public static final int IntakeSlideMotorID = 99;
 
-    public static final int HopperMotorID = 11;
-    public static final double hopperSpeed = 0.5;
+    // public static final int HopperMotorID = 11;
+    
 
   }
 
    public static final class MiddleWheelConstants {
-    public static final int MiddleWheelMotorID = 3;
+    public static final int MiddleWheelMotorID = 23;
     public static final double MiddleWheelSpeed = 0.65;
+  }
+
+  public static class NeckWheelConstants {
+    public static final int NeckWheelMotorID = 4;
+    public static double NeckWheelSpeed = 0.65;
   }
   
       public class VisionProfile {
@@ -95,7 +103,23 @@ public class Constants {
         public static double algaeProportionalTx = 7.5;
     }
 
+    public class LEDConstants{
+          public static final int CANdleID = 1;
+          //idk if we need the rest of this since it's basically just setting the LED lights to whatever button you press
+    // public static final int JoystickId = 0;
+    // public static final int IncrementAnimButton = XboxController.Button.kRightBumper.value;
+    // public static final int DecrementAnimButton = XboxController.Button.kLeftBumper.value;
+    // public static final int BlockButton = XboxController.Button.kStart.value;
+    // public static final int MaxBrightnessAngle = 90;
+    // public static final int MidBrightnessAngle = 180;
+    // public static final int ZeroBrightnessAngle = 270;
+    // public static final int VbatButton = XboxController.Button.kA.value;
+    // public static final int V5Button = XboxController.Button.kB.value;
+    // public static final int CurrentButton = XboxController.Button.kX.value;
+    // public static final int TemperatureButton = XboxController.Button.kY.value;
+}
+    }
 
-  }
+  
 
 

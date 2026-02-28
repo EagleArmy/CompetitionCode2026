@@ -24,14 +24,14 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.IntakeConstants;
 import yams.mechanisms.positional.Elevator;
 
 /**
  * Elevator subsystem using TalonFX with Krakenx44 motor
  */
-@Logged(name = "ElevatorSubsystem")
-public class ElevatorSubsystem extends SubsystemBase {
+@Logged(name = "IntakeSlideSubsystem")
+public class IntakeSlideSubsystem extends SubsystemBase {
 
   // Constants
   private final DCMotor dcMotor = new DCMotor(
@@ -42,7 +42,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     Units.rotationsPerMinuteToRadiansPerSecond(7530),
     1
   ); // Kraken X44;
-  private final int canID = 1;
+  private final int canID = IntakeConstants.IntakeSlideMotorID;
   private final double gearRatio = 15;
   private final double kP = 1;
   private final double kI = 0;
@@ -81,14 +81,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final StatusSignal<Temperature> temperatureSignal;
 
   // Simulation
-  private final ElevatorSim elevatorSim;
+  private final ElevatorSim
+ elevatorSim;
 
   /**
    * Creates a new Elevator Subsystem.
    */
-  public ElevatorSubsystem() {
+  public IntakeSlideSubsystem() {
     // Initialize motor controller
-    motor = new TalonFX(ElevatorConstants.kElevatorLeftMotorID);
+    motor = new TalonFX(canID);
 
     // Create control requests
     positionRequest = new PositionVoltage(0).withSlot(0);
