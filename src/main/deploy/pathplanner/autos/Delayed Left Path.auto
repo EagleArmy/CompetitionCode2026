@@ -23,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "shoot"
+                  "name": "intake"
                 }
               },
               {
@@ -110,7 +110,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "middle wheel start"
+                  "name": "intake off"
                 }
               }
             ]

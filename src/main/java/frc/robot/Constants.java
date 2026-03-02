@@ -63,6 +63,8 @@ public class Constants {
     public static final int IntakeMotorID = 8;
     public static final double intakeSpeed = 1.0;
 
+    public static final int IntakeSlideMotorID = 46;
+
     public static final int HopperMotorID = 11;
     public static final double hopperSpeed = 0.5;
 

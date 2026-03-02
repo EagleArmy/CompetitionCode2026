@@ -25,11 +25,12 @@ import frc.robot.commands.HopperIntakeCommand;
 import frc.robot.commands.HopperShooterCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.ElevatorSubsystem;
+// import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.MiddleWheelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IntakeSlideSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
@@ -51,12 +52,13 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
+    // public final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
     public final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
     public final LimelightSubsystem m_LimelightSubsystem = new LimelightSubsystem();
     public final MiddleWheelSubsystem m_MiddleWheelSubsystem = new MiddleWheelSubsystem();
+    public final IntakeSlideSubsystem m_IntakeSlideSubsystem = new IntakeSlideSubsystem();
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -139,11 +141,13 @@ public class RobotContainer {
 //         joystick.rightTrigger().whileTrue(new HopperShooterCommand(m_HopperSubsystem, m_ShooterSubsystem));
 //           joystick.rightBumper().whileTrue(new InstantCommand( () -> m_HopperSubsystem.stop()));
 
-         joystick.x().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start())); 
-        joystick.b().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.stop()));
-        joystick.y().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.increasetestingspeed()));
-        joystick.a().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.decreasetestingspeed()));
-        joystick.rightBumper().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.reverse()));
+         joystick.x().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(5, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand())); 
+         joystick.b().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(0).andThen(m_IntakeSlideSubsystem.stopCommand())); 
+        joystick.a().onTrue(m_IntakeSlideSubsystem.stopCommand());
+        joystick.rightBumper().onTrue(m_IntakeSlideSubsystem.setHeightCommand(0));
+        // joystick.y().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.increasetestingspeed()));
+        // joystick.a().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.decreasetestingspeed()));
+        // joystick.rightBumper().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.reverse()));
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
