@@ -14,6 +14,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
         public static double shooterSpeed;
             public ShooterSubsystem() 
             {
-                shooterSpeed = .2;
+                shooterSpeed = ShooterConstants.shooterSpeed;
         
                addChild("ShooterMotor2", ShooterMotor2);
         
@@ -47,6 +49,9 @@ public class ShooterSubsystem extends SubsystemBase {
                ShooterMotor2Configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
                ShooterMotor2Configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
                ShooterMotor2.getConfigurator().apply( ShooterMotor2Configuration );
+
+            //    ShooterMotor2.setControl(new Follower(ShooterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+               
         
                        var ShooterMotorConfiguration = new TalonFXConfiguration();
                ShooterMotorConfiguration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -100,6 +105,7 @@ public class ShooterSubsystem extends SubsystemBase {
             //     ShooterMotor.set(-speed);
             //     ShooterMotor2.set(speed);
             // }
+
         
             public void reverse() 
             {
@@ -118,14 +124,15 @@ public class ShooterSubsystem extends SubsystemBase {
                 shooterSpeed += 0.05;
                 System.out.println("shooterSpeed: " + shooterSpeed);
             }
+
             public void decreaseshooterSpeed() 
             {
                 shooterSpeed -= 0.05;
                 System.out.println("shooterSpeed: " + shooterSpeed);
             }
         
-            public void setShooterSpeed(double a) {
-                shooterSpeed = a;
+            public void setShooterSpeed(double newSpeed) {
+                shooterSpeed = newSpeed;
             }
         
             //shooting from different areas

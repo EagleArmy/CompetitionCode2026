@@ -22,7 +22,7 @@ public class NeckWheelSubsystem extends SubsystemBase {
 
     private final TalonFX NeckWheelMotor = new TalonFX(NeckWheelConstants.NeckWheelMotorID);
     //public final double NeckWheelspeed = NeckWheelConstants.NeckWheelSpeed;
-    public double NeckWheelspeed = .65;
+    public double NeckWheelspeed = NeckWheelConstants.NeckWheelSpeed;
 
     public NeckWheelSubsystem() 
     {
@@ -61,7 +61,7 @@ public class NeckWheelSubsystem extends SubsystemBase {
 
     public void reverse() 
     {
-        NeckWheelMotor.set(NeckWheelspeed);
+        NeckWheelMotor.set(-0.1);
     }
 
     public void stop()

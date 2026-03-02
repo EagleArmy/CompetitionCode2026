@@ -30,7 +30,7 @@ import yams.mechanisms.positional.Elevator;
 /**
  * Elevator subsystem using TalonFX with Krakenx44 motor
  */
-@Logged(name = "IntakeSlideSubsystem")
+@Logged(name = "InatkeSlideSubsystem")
 public class IntakeSlideSubsystem extends SubsystemBase {
 
   // Constants

@@ -25,7 +25,7 @@ public class LimelightSubsystem extends SubsystemBase {
     *@param pipeline int, commanded pipeline
    */
 
-  private void setLimelightPipeline(String limelight, int pipeline) {
+  public static void setLimelightPipeline(String limelight, int pipeline) {
     LimelightHelpers.setPipelineIndex(limelight, pipeline);
   }
   
@@ -50,11 +50,11 @@ public double getHubTA(String Limelight){
   
    if(TAmove(Limelight) == true){
   if(LimelightHelpers.getTA(Limelight) < 0.5){
-    ShooterSubsystem.shooterSpeedHub();
+    
     return 0.5;
   }
   else{
-    ShooterSubsystem.shooterSpeedHub();
+    
     return -0.5;
   }
  }

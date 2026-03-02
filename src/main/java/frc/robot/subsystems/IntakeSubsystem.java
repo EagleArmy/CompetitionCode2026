@@ -25,7 +25,6 @@ public class IntakeSubsystem extends SubsystemBase {
     //public final double intakeSpeed = IntakeConstants.intakeSpeed;
     public double intakeSpeed = IntakeConstants.intakeSpeed;
     public double hopperSpeed = IntakeConstants.hopperSpeed;
-
     
     public IntakeSubsystem() 
     {
@@ -72,19 +71,23 @@ public class IntakeSubsystem extends SubsystemBase {
     motionMagicConfigsHopperMotor.MotionMagicJerk = 400; // Target jerk of 1600 rps/s/s (0.1 seconds)
     // 20, 40, 400
     // 8000, 16000, 160000
-
     }
 
     public void start()
     {
-        IntakeMotor.set(-intakeSpeed);
-        HopperMotor.set(intakeSpeed);
+        IntakeMotor.set(intakeSpeed);
+        HopperMotor.set(-intakeSpeed);
         System.out.println("Intake Speed: " + intakeSpeed);
     }
 
     public void reverse() 
     {
-        IntakeMotor.set(intakeSpeed);
+        IntakeMotor.set(-intakeSpeed);
+        HopperMotor.set(intakeSpeed);
+    }
+
+    public void onlyHopper()
+    {
         HopperMotor.set(-intakeSpeed);
     }
 
@@ -104,10 +107,10 @@ public class IntakeSubsystem extends SubsystemBase {
         System.out.println("Testing Speed: " + intakeSpeed);
     }
 
-    public void setIntakeHopperSpeed(double a, double b)
+    public void setIntakeHopperSpeed(double newIntake, double newHopper)
     {
-        intakeSpeed = a;
-        hopperSpeed = b;
+        intakeSpeed = newIntake;
+        hopperSpeed = newHopper;
     }
     
     @Override

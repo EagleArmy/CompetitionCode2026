@@ -22,7 +22,7 @@ public class MiddleWheelSubsystem extends SubsystemBase {
 
     private final TalonFX MiddleWheelMotor = new TalonFX(MiddleWheelConstants.MiddleWheelMotorID);
     //public final double MiddleWheelspeed = MiddleWheelConstants.MiddleWheelSpeed;
-    public double MiddleWheelspeed = .65;
+    public double MiddleWheelspeed = MiddleWheelConstants.MiddleWheelSpeed;
 
     public MiddleWheelSubsystem() 
     {
