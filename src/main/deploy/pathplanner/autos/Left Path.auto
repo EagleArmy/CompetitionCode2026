@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Start"
+            "pathName": "Left Start"
           }
         },
         {
@@ -17,7 +17,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start align"
+                  "pathName": "Left Start align"
                 }
               },
               {
@@ -36,13 +36,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Over bump to intake start"
+                  "pathName": "Left Over Bump"
                 }
               },
               {
@@ -63,25 +63,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 2.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "over bump 180"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "limelight align"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "pathName": "180  Left Turn"
           }
         },
         {
@@ -91,7 +79,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake to bump"
+                  "pathName": "Drive & collect"
                 }
               },
               {
@@ -104,15 +92,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Over bump to shooting"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Bump Return"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "middle wheel start"
+                }
+              }
+            ]
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "limelight align"
+            "pathName": "New Path"
           }
         },
         {
@@ -122,22 +123,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Shooting to end"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "name": "shoot"
           }
         }
       ]
