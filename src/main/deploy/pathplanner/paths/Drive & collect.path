@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.924,
+        "y": 5.51
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.173865560299425,
+        "y": 5.501802331047497
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.613689205219453,
+        "y": 6.934602609721785
+      },
+      "prevControl": {
+        "x": 6.333345195729538,
+        "y": 7.3219335705812565
+      },
+      "nextControl": {
+        "x": 7.958949968239524,
+        "y": 6.830153975529389
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.613689205219453,
+        "y": 1.017046263345195
+      },
+      "prevControl": {
+        "x": 7.963847357940658,
+        "y": 1.0507651965701996
+      },
+      "nextControl": {
+        "x": 6.161198102016608,
+        "y": 0.8771767497034405
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.924,
+        "y": 2.62
+      },
+      "prevControl": {
+        "x": 6.171957295373667,
+        "y": 2.652277580071175
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0017761989342715,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 1.9502664298401373,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.57,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "Paths Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

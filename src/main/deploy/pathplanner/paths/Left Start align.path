@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.580858676207513,
-        "y": 7.2
+        "x": 1.685,
+        "y": 5.51
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5808586762075096,
-        "y": 7.2
+        "x": 1.935,
+        "y": 5.51
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.5,
-        "y": 7.2
+        "x": 1.685,
+        "y": 5.51
       },
       "prevControl": {
-        "x": 1.5,
-        "y": 7.2
+        "x": 1.435,
+        "y": 5.51
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,18 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.625,
+        "y": 4.03
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 4.57,
@@ -42,10 +53,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -30.946686913274856
   },
   "reversed": false,
-  "folder": "G.O. Left Paths",
+  "folder": "Paths Left",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
