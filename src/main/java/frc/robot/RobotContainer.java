@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -141,15 +142,18 @@ public class RobotContainer {
 //         joystick.rightTrigger().whileTrue(new HopperShooterCommand(m_HopperSubsystem, m_ShooterSubsystem));
 //           joystick.rightBumper().whileTrue(new InstantCommand( () -> m_HopperSubsystem.stop()));
 
-         joystick.x().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(5, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand())); 
-         joystick.b().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(0).andThen(m_IntakeSlideSubsystem.stopCommand())); 
+
+        //intake slide goes out 11 inches
+        //testing is 28.5
+         joystick.x().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand())); 
+         joystick.b().onTrue(new ParallelCommandGroup(m_IntakeSlideSubsystem.moveBacktoZeroCommand((Meters.convertFrom(.8, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand())));
         joystick.a().onTrue(m_IntakeSlideSubsystem.stopCommand());
         joystick.rightBumper().onTrue(m_IntakeSlideSubsystem.setHeightCommand(0));
         // joystick.y().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.increasetestingspeed()));
         // joystick.a().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.decreasetestingspeed()));
-        // joystick.rightBumper().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.reverse()));
+        // joystick.rightBumper().onTrue(new InstantCommand ( () -> m_MiddleWheelSubsystem.reverse()));
 
-        // Reset the field-centric heading on left bumper press.
+        // Reset the field-centric heading on left bumper press.T
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         
 

@@ -43,14 +43,14 @@ public class IntakeSlideSubsystem extends SubsystemBase {
     1
   ); // Kraken X44;
   private final int canID = IntakeConstants.IntakeSlideMotorID;
-  private final double gearRatio = 15;
-  private final double kP = 1;
+  private final double gearRatio = 15; //originally 15
+  private final double kP = 1.5;
   private final double kI = 0.001;
-  private final double kD = 0;
+  private final double kD = 0.001;
   private final double kS = 0;
   private final double kV = 0;
   private final double kA = 0;
-  private final double kG = 0.001;
+  private final double kG = 0;
   private final double maxVelocity = 1; // meters per second
   private final double maxAcceleration = 1; // meters per second squared
   private final boolean brakeMode = true;
@@ -60,7 +60,8 @@ public class IntakeSlideSubsystem extends SubsystemBase {
   private final double supplyCurrentLimit = 40;
   private final double drumRadius = 0.0254; // meters
   private final double minheight = 0;
-  private final double maxheight = 1;
+  private final double maxheight = 1; //meters
+  
 
   // Feedforward
   private final ElevatorFeedforward feedforward = new ElevatorFeedforward(
@@ -332,6 +333,37 @@ public class IntakeSlideSubsystem extends SubsystemBase {
     }).until(() -> {
         double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
         return Math.abs(heightMeters - currentHeight) < 0.02; // 2cm tolerance
+      });
+  }
+
+    /**
+   * Creates a command to move the elevator to a specific height with a profile.
+   * @param heightMeters The target height in meters
+   * @return A command that moves the elevator to the specified height
+   */
+  public Command moveBacktoZeroCommand(double heightMeters) {
+    return run(() -> {
+      double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
+      double error = heightMeters - currentHeight;
+      double velocity =
+        Math.signum(error) * Math.min(Math.abs(error) * 2.0, maxVelocity);
+      setVelocity(velocity + 0.1);
+    }).until(() -> {
+        double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
+        return Math.abs(heightMeters - currentHeight) < 0.02; // 2cm tolerance
+      });
+  }
+
+  public Command moveAtSetVelocityCommand(double heightMeters) {
+    return run(() -> {
+      double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
+      double error = heightMeters - currentHeight;
+      double velocity = 0.2;
+      setVelocity(-velocity);
+    }).until(() -> {
+        double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
+        return Math.abs(heightMeters - currentHeight) < 0.02; // 2cm tolerance
+
       });
   }
 
