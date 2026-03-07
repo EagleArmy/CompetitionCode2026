@@ -7,7 +7,9 @@ package frc.robot;
 import com.ctre.phoenix6.HootAutoReplay;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -22,6 +24,7 @@ public class Robot extends TimedRobot {
         .withJoystickReplay();
 
     private final boolean kUseLimelight = false;
+    private final boolean hubActive = true;
 
     public Robot() {
         m_robotContainer = new RobotContainer();
@@ -40,6 +43,18 @@ public class Robot extends TimedRobot {
          * This example is sufficient to show that vision integration is possible, though exact implementation
          * of how to use vision should be tuned per-robot and to the team's specification.
          */
+        
+        SmartDashboard.putBoolean("isHubActive", hubActive);
+
+
+
+        DriverStation.getMatchTime();
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+
+
+
+
+
         if (kUseLimelight) {
             var driveState = m_robotContainer.drivetrain.getState();
             double headingDeg = driveState.Pose.getRotation().getDegrees();
