@@ -34,14 +34,14 @@ public class Constants {
         public static final double rx_slowMode = 0.4;
     }
         
-    public static final class TestingConstants 
-  {
-    public static final int testMotorID = 6;
-  } 
+  //   public static final class TestingConstants 
+  // {
+  //   public static final int testMotorID = 6;
+  // } 
 
     public static final class ElevatorConstants 
   {
-    public static final int kElevatorLeftMotorID = 99;        //Pratice Robot ID: 3
+    public static final int kElevatorLeftMotorID = 23;        //Pratice Robot ID: 3
     //public static final int kElevatorRightMotorID = 10;      //Pratice Robot ID: 44
     // public static final double kStartPosition = 0; 
     // public static final double kFirstPosition = 4.6; //originally 0
@@ -51,28 +51,33 @@ public class Constants {
     //public static final double kFourthPositionAuto = 52;
   }
 
-  public static final class ShooterConstants {
-    public static final int ShooterMotorID = 10;
+  public static class ShooterConstants {
+    // public static final int ShooterMotorID = 23;
+    public static final int ShooterMotorID = 10; //10 needs to move in reverse
     public static final int ShooterMotorID2 = 2;
-    public static final int ShooterMotorID3 = 4;
     
-    public static final double shooterSpeed = 0.55;
+    public static double shooterSpeed = 1.0;
+    //OK BTW the motor moves counterclockwise if you're facing the "tape" or the talonFX part is facing away from you
   }
 
-  public static final class IntakeConstants{
-    public static final int IntakeMotorID = 8;
-    public static final double intakeSpeed = 1.0;
-
-    public static final int IntakeSlideMotorID = 46;
-
-    public static final int HopperMotorID = 11;
-    public static final double hopperSpeed = 0.5;
+  public static class IntakeConstants{
+    public static final int IntakeMotorID = 99;
+    public static final int HopperMotorID = 9;
+    public static double intakeSpeed = 1.0;
+    public static double hopperSpeed = 0.5;
+   // public static final int IntakeSlideMotorID = 46;
+   public static final int IntakeSlideMotorID = 46;
 
   }
 
    public static final class MiddleWheelConstants {
     public static final int MiddleWheelMotorID = 3;
     public static final double MiddleWheelSpeed = 0.65;
+  }
+
+  public static class NeckWheelConstants {
+    public static final int NeckWheelMotorID = 7;
+    public static double NeckWheelSpeed = 0.40;
   }
   
       public class VisionProfile {
@@ -97,7 +102,23 @@ public class Constants {
         public static double algaeProportionalTx = 7.5;
     }
 
+    public class LEDConstants{
+          public static final int CANdleID = 1;
+          //idk if we need the rest of this since it's basically just setting the LED lights to whatever button you press
+    // public static final int JoystickId = 0;
+    // public static final int IncrementAnimButton = XboxController.Button.kRightBumper.value;
+    // public static final int DecrementAnimButton = XboxController.Button.kLeftBumper.value;
+    // public static final int BlockButton = XboxController.Button.kStart.value;
+    // public static final int MaxBrightnessAngle = 90;
+    // public static final int MidBrightnessAngle = 180;
+    // public static final int ZeroBrightnessAngle = 270;
+    // public static final int VbatButton = XboxController.Button.kA.value;
+    // public static final int V5Button = XboxController.Button.kB.value;
+    // public static final int CurrentButton = XboxController.Button.kX.value;
+    // public static final int TemperatureButton = XboxController.Button.kY.value;
+}
+    }
 
-  }
+  
 
 
