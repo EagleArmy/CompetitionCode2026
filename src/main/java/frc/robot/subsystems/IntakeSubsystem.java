@@ -76,19 +76,19 @@ public class IntakeSubsystem extends SubsystemBase {
     public void start()
     {
         IntakeMotor.set(intakeSpeed);
-        HopperMotor.set(-intakeSpeed);
+        HopperMotor.set(-hopperSpeed);
         System.out.println("Intake Speed: " + intakeSpeed);
     }
 
     public void reverse() 
     {
         IntakeMotor.set(-intakeSpeed);
-        HopperMotor.set(intakeSpeed);
+        HopperMotor.set(hopperSpeed);
     }
 
     public void onlyHopper()
     {
-        HopperMotor.set(-intakeSpeed);
+        HopperMotor.set(-hopperSpeed);
     }
 
     public void stop()

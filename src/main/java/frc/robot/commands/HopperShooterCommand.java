@@ -23,7 +23,7 @@ public class HopperShooterCommand extends Command{
         System.out.println("Hopper works with Shooter!");
 
         m_HopperSubsystem.start();
-        m_ShooterSubsystem.set(.55);
+        // m_ShooterSubsystem.set(.55);
 
     }
 

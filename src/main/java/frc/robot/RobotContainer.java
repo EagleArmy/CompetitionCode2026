@@ -29,21 +29,18 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 // import frc.robot.commands.HopperIntakeCommand;
 // import frc.robot.commands.HopperShooterCommand;
 import frc.robot.generated.TunerConstants;
-//  import frc.robot.generated.TunerConstantsTestingRobot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-// import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeSlideSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.MiddleWheelSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.subsystems.IntakeSlideSubsystem;
+// import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.ShooterwoPIDSubsystem;
 import frc.robot.subsystems.NeckWheelSubsystem;
-// import frc.robot.commands.LimelightMoveCommand;
-// import frc.robot.commands.ShooterWithNeckCommand;
-// import frc.robot.commands.UltraIntakeCommand;
-// import frc.robot.commands.UltraShooterCommand;
-//import frc.robot.commands.speedupingtest;
+import frc.robot.commands.StopEverythingCommand;
+
+
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -65,15 +62,16 @@ public class RobotContainer {
 
     //top tuner constant is real robot, bottom is test
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    // public final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
+     //public final CommandSwerveDrivetrain drivetrain = TunerConstantsTestingRobot.createDrivetrain();
+    
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     //public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
     public final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
     public final LimelightSubsystem m_LimelightSubsystem = new LimelightSubsystem();
     public final MiddleWheelSubsystem m_MiddleWheelSubsystem = new MiddleWheelSubsystem();
-    public final IntakeSlideSubsystem m_IntakeSlideSubsystem = new IntakeSlideSubsystem();
     public final NeckWheelSubsystem m_NeckWheelSubsystem = new NeckWheelSubsystem();
+    public final IntakeSlideSubsystem m_IntakeSlideSubsystem = new IntakeSlideSubsystem();
+    public final ShooterwoPIDSubsystem m_ShooterwoPIDSubsystem = new ShooterwoPIDSubsystem();
 
     /* Path follower */
    private final SendableChooser<Command> autoChooser;
@@ -165,15 +163,17 @@ public class RobotContainer {
         //     point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))
         // ));
 
-        //touch shooter!
-        driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterSubsystem.start()));
+        //press shooter!
+        driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterwoPIDSubsystem.start()));
+        driver.rightBumper().onFalse(new InstantCommand(() -> m_ShooterwoPIDSubsystem.stop()));
+        //neck wheel moves
         driver.rightTrigger().onTrue(new ParallelCommandGroup(
                 new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()) , 
                 new InstantCommand(() -> m_NeckWheelSubsystem.start())));
         driver.a().onTrue(new ParallelCommandGroup(
                 new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
-                new InstantCommand(() -> m_ShooterSubsystem.stop())));
+                new InstantCommand(() -> m_ShooterwoPIDSubsystem.stop())));
         //ultraShooterCommand should be repurposed for stopping everything
 
         //start intake
@@ -186,6 +186,11 @@ public class RobotContainer {
                 new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop())
                 ));
+
+        driver.povUp().onTrue(
+            m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
+        driver.povDown().onTrue(
+            m_IntakeSlideSubsystem.moveBackToZeroCommand(0).andThen(m_IntakeSlideSubsystem.stopCommand()));
         // driver.povUp().whileTrue(drivetrain.applyRequest(() ->
         //     forwardStraight.withVelocityX(0.5).withVelocityY(0))
         // );
@@ -200,25 +205,71 @@ public class RobotContainer {
         // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-
-
-        //intake slide goes out 11 inches
-        //testing is 28.5
-         driver.x().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand())); 
-         driver.b().onTrue(new ParallelCommandGroup(m_IntakeSlideSubsystem.moveBacktoZeroCommand((Meters.convertFrom(.8, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand())));
-        driver.a().onTrue(m_IntakeSlideSubsystem.stopCommand());
-        // joystick.y().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.increasetestingspeed()));
-        // joystick.a().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.decreasetestingspeed()));
-        // joystick.rightBumper().onTrue(new InstantCommand ( () -> m_MiddleWheelSubsystem.reverse()));
-
-        // Reset the field-centric heading on left bumper press.T
-        driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-
         // driver.y().onTrue(new InstantCommand( () -> m_ShooterSubsystem.start()));
         // driver.a().onTrue(new InstantCommand( () -> m_ShooterSubsystem.stop()));
 
         // driver.povUp().onTrue(new InstantCommand(() -> m_IntakeSubsystem.start()));
+        // driver.povDown().onTrue(new InstantCommand(() -> m_IntakeSubsystem.stop()));
+        // driver.povLeft().onTrue(new InstantCommand(() -> m_IntakeSubsystem.reverse()));
+
+        //testing speeds for mid wheel
+        // driver.x().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start())); 
+        // driver.b().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.stop()));
+        // driver.y().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.increasetestingspeed()));
+        // driver.a().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.decreasetestingspeed()));
+        // driver.rightBumper().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.reverse()));
+
+        //neck wheel thing; when you hold the button it runs, when you let go it stops 
+        //driver.leftTrigger().whileFalse(new InstantCommand( () -> m_NeckWheelSubsystem.stop()));
+
+        //COMPETITION BUTTON BINDINGS
+
+        // driver.rightTrigger().whileTrue(
+        //      drivetrain.applyRequest(() ->
+        //         drive.withVelocityX(-driver.getLeftY() * MaxSpeed/10) // Drive forward with negative Y (forward)
+        //             .withVelocityY(driver.getLeftX() * MaxSpeed/10) // Drive left with negative X (left)
+        //             .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
+
+        // driver.rightBumper().debounce(0.2).whileTrue(
+        //     drivetrain.applyRequest(() -> forwardStraight
+        //         .withRotationalRate(-m_LimelightSubsystem.getHubTx("limelight")/Constants.VisionProfile.hubProportionalTx)
+        //         .withVelocityX(m_LimelightSubsystem.getHubTA("limelight")) // Reduced speed for fine adjustments
+        //         .withVelocityY(driver.getLeftY())
+        //     )
+        // );
+
+        // driver.y().onTrue(new InstantCommand(() -> m_IntakeSubsystem.start()));
+        // driver.x().onTrue(new InstantCommand(() -> m_IntakeSubsystem.stop()));
+
+        //this is just the intake moving 
+        // driver.y().onTrue(new ParallelCommandGroup(
+        //         new InstantCommand(() -> m_IntakeSubsystem.start()) , 
+        //         new InstantCommand(() -> m_NeckWheelSubsystem.reverse())
+        //         ));            
+        // driver.x().onTrue(new ParallelCommandGroup(
+        //         new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
+        //         new InstantCommand(() -> m_NeckWheelSubsystem.stop())
+        //         ));
+
+
+        // driver.leftTrigger().whileTrue(new InstantCommand(() -> m_MiddleWheelSubsystem.reverse()));
+         //driver.leftBumper().whileTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start()));
+        // driver.leftBumper().and(driver.leftTrigger()).whileFalse(new InstantCommand(() -> m_MiddleWheelSubsystem.stop()));
+        // //driver.leftBumper().whileFalse(new InstantCommand( () -> m_MiddleWheelSubsystem.stop()));
+        // driver.povRight().onTrue( new InstantCommand( () -> m_ElevatorSubsystem.setVelocity(0)));
+
+        // operator.b().onTrue(m_ElevatorSubsystem.setHeightCommand(Meters.convertFrom(33, Inches)));
+        // operator.a().onTrue(m_ElevatorSubsystem.setHeightCommand(0));
+
+        //shooter on!
+        
+        // operator.rightTrigger().whileTrue(new ParallelCommandGroup(
+        //         new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()) , 
+        //         new InstantCommand(() ->m_NeckWheelSubsystem.start()),
+        //         new InstantCommand(() -> m_ShooterSubsystem.start())));
+        // operator.rightTrigger().whileFalse(new ParallelCommandGroup(
         //         new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
         //         new InstantCommand(() ->m_NeckWheelSubsystem.stop()),
         //         new InstantCommand(() -> m_ShooterSubsystem.stop())));

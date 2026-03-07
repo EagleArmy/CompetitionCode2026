@@ -41,7 +41,7 @@ public class Constants {
 
     public static final class ElevatorConstants 
   {
-    public static final int kElevatorLeftMotorID = 23;        //Pratice Robot ID: 3
+    public static final int ElevatorMotorID = 23;        //Pratice Robot ID: 3
     //public static final int kElevatorRightMotorID = 10;      //Pratice Robot ID: 44
     // public static final double kStartPosition = 0; 
     // public static final double kFirstPosition = 4.6; //originally 0
@@ -56,18 +56,19 @@ public class Constants {
     public static final int ShooterMotorID = 10; //10 needs to move in reverse
     public static final int ShooterMotorID2 = 2;
     
-    public static double shooterSpeed = 1.0;
+    public static double shooterSpeed = .55;
     //OK BTW the motor moves counterclockwise if you're facing the "tape" or the talonFX part is facing away from you
   }
 
   public static class IntakeConstants{
-    public static final int IntakeMotorID = 99;
-    public static final int HopperMotorID = 9;
-    public static double intakeSpeed = 1.0;
+    public static final int IntakeMotorID = 47;
+    public static final int HopperMotorID = 48;
+    public static double intakeSpeed = 1;
     public static double hopperSpeed = 0.5;
-   // public static final int IntakeSlideMotorID = 46;
    public static final int IntakeSlideMotorID = 46;
 
+    // public static final int HopperMotorID = 11;
+    // I am michael murphy and I ruined the code
   }
 
    public static final class MiddleWheelConstants {
@@ -75,6 +76,7 @@ public class Constants {
     public static final double MiddleWheelSpeed = 0.65;
   }
 
+  
   public static class NeckWheelConstants {
     public static final int NeckWheelMotorID = 7;
     public static double NeckWheelSpeed = 0.40;
