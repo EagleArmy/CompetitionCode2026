@@ -165,7 +165,6 @@ public class RobotContainer {
 
         //press shooter!
         driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterwoPIDSubsystem.start()));
-        driver.rightBumper().onFalse(new InstantCommand(() -> m_ShooterwoPIDSubsystem.stop()));
         //neck wheel moves
         driver.rightTrigger().onTrue(new ParallelCommandGroup(
                 new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()) , 
@@ -186,6 +185,9 @@ public class RobotContainer {
                 new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop())
                 ));
+
+        //hjopper and intake dont run at the same itme annymore
+        //its just hopper and neckwheel
 
         driver.povUp().onTrue(
             m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));

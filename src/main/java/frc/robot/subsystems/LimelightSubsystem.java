@@ -44,12 +44,46 @@ public class LimelightSubsystem extends SubsystemBase {
     return true;
   }
 }
+  public static boolean TAmoveMid(String Limelight){
+  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){
+    return false;
+  }
+  else{
+    return true;
+  }
+}
+  public static boolean TAmoveFar(String Limelight){
+  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){
+    return false;
+  }
+  else{
+    return true;
+  }
+}
 //measure values on actual roboto
 public double getHubTA(String Limelight){
     setLimelightPipeline(Limelight, 0);
   
-   if(TAmove(Limelight) == true){
-  if(LimelightHelpers.getTA(Limelight) < 0.5){
+
+
+  if(LimelightHelpers.getTA(Limelight) < 0.7){
+    if(TAmoveFar(Limelight) == true){
+      ShooterSubsystem.shooterSpeedTower();
+      NeckWheelSubsystem.setNeckWheelSpeed(0);
+      if(LimelightHelpers.getTA(Limelight) < 0.5){
+    
+        return 0.5;
+      }
+      else{
+    
+      return -0.5;
+    }
+ }}
+  if(LimelightHelpers.getTA(Limelight) >= 0.7 && LimelightHelpers.getTA(Limelight) < 0.9){
+    if(TAmoveMid(Limelight) == true){
+      ShooterSubsystem.shooterSpeedTower();
+      NeckWheelSubsystem.setNeckWheelSpeed(0);
+      if(LimelightHelpers.getTA(Limelight) < 0.5){
     
     return 0.5;
   }
@@ -57,12 +91,24 @@ public double getHubTA(String Limelight){
     
     return -0.5;
   }
- }
-  else {
-    return 0;
+}}
+  if(LimelightHelpers.getTA(Limelight) >= 0.9){
+    if(TAmove(Limelight) == true){
+      ShooterSubsystem.shooterSpeedTower();
+      NeckWheelSubsystem.setNeckWheelSpeed(0);
+      if(LimelightHelpers.getTA(Limelight) < 0.5){
+    
+         return 0.5;
+      }
+      else{
+    
+        return -0.5;
+      }
+    }
+    else{return 0;}
   }
-
-}
+  else{ return 0;}
+  }
 
 
 
