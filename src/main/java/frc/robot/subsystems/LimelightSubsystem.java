@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -64,7 +67,7 @@ public class LimelightSubsystem extends SubsystemBase {
 public double getHubTA(String Limelight){
     setLimelightPipeline(Limelight, 0);
   
-
+// 6-7!!!!!!!!
 
   if(LimelightHelpers.getTA(Limelight) < 0.7){
     if(TAmoveFar(Limelight) == true){
@@ -81,7 +84,7 @@ public double getHubTA(String Limelight){
  }}
   if(LimelightHelpers.getTA(Limelight) >= 0.7 && LimelightHelpers.getTA(Limelight) < 0.9){
     if(TAmoveMid(Limelight) == true){
-      ShooterSubsystem.shooterSpeedTower();
+      ShooterSubsystem.shooterSpeedMid();
       NeckWheelSubsystem.setNeckWheelSpeed(0);
       if(LimelightHelpers.getTA(Limelight) < 0.5){
     
@@ -94,7 +97,7 @@ public double getHubTA(String Limelight){
 }}
   if(LimelightHelpers.getTA(Limelight) >= 0.9){
     if(TAmove(Limelight) == true){
-      ShooterSubsystem.shooterSpeedTower();
+      ShooterSubsystem.shooterSpeedHub();
       NeckWheelSubsystem.setNeckWheelSpeed(0);
       if(LimelightHelpers.getTA(Limelight) < 0.5){
     
@@ -140,5 +143,7 @@ public double getHubTA(String Limelight){
   // This method will be called once per scheduler run
   public void periodic() {
     SmartDashboard.putBoolean("AlignedWithhubX", limelightAlignedTx());
+
+
   }
 }

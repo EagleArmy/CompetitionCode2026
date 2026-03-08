@@ -13,8 +13,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 // import frc.robot.commands.HopperIntakeCommand;
 // import frc.robot.commands.HopperShooterCommand;
 import frc.robot.generated.TunerConstants;
+import frc.robot.generated.TunerConstantsTestingRobot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSlideSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -61,8 +66,8 @@ public class RobotContainer {
     private final CommandXboxController operator = new CommandXboxController(1);
 
     //top tuner constant is real robot, bottom is test
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-     //public final CommandSwerveDrivetrain drivetrain = TunerConstantsTestingRobot.createDrivetrain();
+    //public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstantsTestingRobot.createDrivetrain();
     
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     //public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
@@ -78,6 +83,7 @@ public class RobotContainer {
 
     public RobotContainer() {
 
+// CameraServer.startAutomaticCapture().getKind().kHttp; Michael do this now - Michael
         //reg subsystem
         // NamedCommands.registerCommand("intake", new ParallelCommandGroup(
         //         new InstantCommand(() -> m_IntakeSubsystem.start()) , 
