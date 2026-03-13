@@ -5,21 +5,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "revUp"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Right Start"
+            "pathName": "Middle Start"
           }
         },
         {
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Start align"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -29,7 +29,13 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 7.5
+                  "waitTime": 2.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooter off"
                 }
               }
             ]
@@ -42,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Over bump to intake start"
+                  "pathName": "Middle over Bump"
                 }
               },
               {
@@ -67,31 +73,13 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "over bump 180"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "limelight align"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Intake to bump"
+                  "pathName": "The Phantomic Phomb"
                 }
               },
               {
@@ -104,40 +92,70 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Over bump to shooting"
+            "name": "intake off"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "middle wheel start"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Middle return Bump"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "limelight align"
+            "name": "middle wheel stop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "The Phantastic Phour"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "revUp"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 3.0
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Shooting to end"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooter off"
           }
         }
       ]

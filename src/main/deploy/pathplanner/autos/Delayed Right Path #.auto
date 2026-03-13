@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "revUp"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Left Start"
+            "pathName": "Right Start"
           }
         },
         {
@@ -17,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Start align"
+                  "pathName": "Start align"
                 }
               },
               {
@@ -31,18 +37,30 @@
                 "data": {
                   "waitTime": 2.5
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooter off"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
               }
             ]
           }
         },
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Over Bump"
+                  "pathName": "Over bump to intake start"
                 }
               },
               {
@@ -63,13 +81,25 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 3.0
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "180  Left Turn"
+            "pathName": "over bump 180"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "limelight align"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
@@ -79,7 +109,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Drive & collect"
+                  "pathName": "Intake to bump"
                 }
               },
               {
@@ -98,7 +128,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Bump Return"
+                  "pathName": "Over bump to shooting"
                 }
               },
               {
@@ -111,9 +141,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "New Path"
+            "name": "middle wheel stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "limelight align"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "revUp"
           }
         },
         {
@@ -123,9 +165,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Shooting to end"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shooter off"
+                }
+              }
+            ]
           }
         }
       ]

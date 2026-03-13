@@ -61,7 +61,7 @@ public class MiddleWheelSubsystem extends SubsystemBase {
 
     public void reverse() 
     {
-        MiddleWheelMotor.set(MiddleWheelspeed);
+        MiddleWheelMotor.set(-MiddleWheelspeed);
     }
 
     public void stop()
