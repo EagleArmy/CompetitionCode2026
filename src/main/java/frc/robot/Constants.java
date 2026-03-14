@@ -56,15 +56,15 @@ public class Constants {
     public static final int ShooterMotorID = 50; //the motor on the right needs to move in reverse
     public static final int ShooterMotorID2 = 51;
     
-    public static double shooterSpeed = .55;
+    public static double shooterSpeed = 1;
     //OK BTW the motor moves counterclockwise if you're facing the "tape" or the talonFX part is facing away from you
   }
 
   public static class IntakeConstants{
     public static final int IntakeMotorID = 47;
     public static final int HopperMotorID = 48;
-    public static double intakeSpeed = 1;
-    public static double hopperSpeed = 0.5;
+    public static double intakeSpeed = .8;
+    public static double hopperSpeed = 0.3;
    public static final int IntakeSlideMotorID = 46;
 
     // public static final int HopperMotorID = 11;
@@ -73,7 +73,7 @@ public class Constants {
 
    public static final class MiddleWheelConstants {
     public static final int MiddleWheelMotorID = 3;
-    public static final double MiddleWheelSpeed = 0.65;
+    public static final double MiddleWheelSpeed = 0.05; //normally 65
   }
 
 

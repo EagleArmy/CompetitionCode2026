@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "revUp"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Left Start"
@@ -23,7 +29,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intake"
+                  "name": "shoot"
                 }
               },
               {
@@ -119,7 +125,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Left Bump Shoot"
           }
         },
         {

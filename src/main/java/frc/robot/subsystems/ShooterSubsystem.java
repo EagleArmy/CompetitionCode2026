@@ -59,20 +59,20 @@ public class ShooterSubsystem extends SubsystemBase {
                ShooterMotor.getConfigurator().apply( ShooterMotorConfiguration );
         
             var slot0ConfigsRight = ShooterMotor2Configuration.Slot0;
-            slot0ConfigsRight.kS = 0.25; // Add 0.25 V output to overcome static friction
-            slot0ConfigsRight.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
-            slot0ConfigsRight.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-            slot0ConfigsRight.kP = 4.8; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
+            slot0ConfigsRight.kS = 0.30474; // Add 0.25 V output to overcome static friction
+            slot0ConfigsRight.kV = 0.12273; // A velocity target of 1 rps results in 0.12 V output
+            slot0ConfigsRight.kA = 0.048319; // An acceleration of 1 rps/s requires 0.01 V output
+            slot0ConfigsRight.kP = 0.50684; // A position error of 2.5 rotations results in 12 V output   //4.8 originally 
             slot0ConfigsRight.kI = 0; // no output for integrated error
-            slot0ConfigsRight.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+            slot0ConfigsRight.kD = 0; // A velocity error of 1 rps results in 0.1 V output
         
             var slot0Configs = ShooterMotorConfiguration.Slot0;
-            slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
-            slot0Configs.kV = 0.15; // A velocity target of 1 rps results in 0.12 V output
-            slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-            slot0Configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
+            slot0Configs.kS = 0.30474; // Add 0.25 V output to overcome static friction
+            slot0Configs.kV = 0.12273; // A velocity target of 1 rps results in 0.12 V output
+            slot0Configs.kA = 0.048319; // An acceleration of 1 rps/s requires 0.01 V output
+            slot0Configs.kP = 0.50684; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
             slot0Configs.kI = 0; // no output for integrated error
-            slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+            slot0Configs.kD = 0; // A velocity error of 1 rps results in 0.1 V output
         
         
             // // set Motion Magic settings
