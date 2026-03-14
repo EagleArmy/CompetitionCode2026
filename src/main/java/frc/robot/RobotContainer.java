@@ -79,11 +79,14 @@ public class RobotContainer {
     public final ShooterwoPIDSubsystem m_ShooterwoPIDSubsystem = new ShooterwoPIDSubsystem();
 
     /* Path follower */
+    //Eddie is a . (Verified) 
    private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-
+        CameraServer.startAutomaticCapture();
+        
 // CameraServer.startAutomaticCapture().getKind().kHttp; Michael do this now - Michael
+
         //reg subsystem
         // NamedCommands.registerCommand("intake", new ParallelCommandGroup(
         //         new InstantCommand(() -> m_IntakeSubsystem.start()) , 
@@ -170,7 +173,7 @@ public class RobotContainer {
         // ));
 
         //press shooter!
-        driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterwoPIDSubsystem.start()));
+        driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterSubsystem.start()));
         //neck wheel moves
         driver.rightTrigger().onTrue(new ParallelCommandGroup(
                 new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()) , 
@@ -178,7 +181,7 @@ public class RobotContainer {
         driver.a().onTrue(new ParallelCommandGroup(
                 new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
-                new InstantCommand(() -> m_ShooterwoPIDSubsystem.stop())));
+                new InstantCommand(() -> m_ShooterSubsystem.stop())));
         //ultraShooterCommand should be repurposed for stopping everything
 
         //start intake
@@ -290,6 +293,7 @@ public class RobotContainer {
         //     0.15));
         // driver.a().onTrue(m_IntakeSlideSubsystem.stopCommand());
         // driver.rightBumper().onTrue(m_IntakeSlideSubsystem.moveToHeightCommand(0));
+
 
         
          // Reset the field-centric heading on left bumper press.
