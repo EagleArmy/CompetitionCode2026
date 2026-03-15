@@ -96,8 +96,8 @@ public class ShooterSubsystem extends SubsystemBase {
         
             public void start()
             {
-                ShooterMotor.set(shooterSpeed); 
-                ShooterMotor2.set(-shooterSpeed); //2 needs to be reversed
+                ShooterMotor.set(-shooterSpeed); 
+                ShooterMotor2.set(shooterSpeed); //2 needs to be reversed
                 System.out.println("shooterSpeed: " + shooterSpeed);
             }
         
@@ -109,8 +109,8 @@ public class ShooterSubsystem extends SubsystemBase {
         
             public void reverse() 
             {
-                ShooterMotor.set(-shooterSpeed);
-                ShooterMotor2.set(shooterSpeed);
+                ShooterMotor.set(shooterSpeed);
+                ShooterMotor2.set(-shooterSpeed);
             }
         
             public void stop()
@@ -131,22 +131,22 @@ public class ShooterSubsystem extends SubsystemBase {
                 System.out.println("shooterSpeed: " + shooterSpeed);
             }
         
-            public void setShooterSpeed(double newSpeed) {
+            public static void setShooterSpeed(double newSpeed) {
                 shooterSpeed = newSpeed;
             }
         
             //shooting from different areas
-            public static void shooterSpeedHub() {
-                shooterSpeed = 0.55;
-    }
+            // public static void shooterSpeedHub() {
+            //     shooterSpeed = 0.55;
+            // }
 
-    public static void shooterSpeedMid() {
-            shooterSpeed = 0.65;
-        }
-        
-    public static void shooterSpeedTower() {
-        shooterSpeed = 0.75;
-    }
+            // public static void shooterSpeedMid() {
+            //         shooterSpeed = 0.65;
+            //     }
+                
+            // public static void shooterSpeedTower() {
+            //     shooterSpeed = 0.75;
+            // }
 
     
 

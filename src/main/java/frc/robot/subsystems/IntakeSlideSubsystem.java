@@ -18,6 +18,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.*;
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -51,7 +52,7 @@ public class IntakeSlideSubsystem extends SubsystemBase {
   private final double kV = 0;
   private final double kA = 0;
   private final double kG = 0;
-  private final double maxVelocity = 1; // meters per second
+  private final double maxVelocity = 6; // meters per second
   private final double maxAcceleration = 1; // meters per second squared
   private final boolean brakeMode = true;
   private final boolean enableStatorLimit = true;
@@ -278,6 +279,7 @@ public class IntakeSlideSubsystem extends SubsystemBase {
     double ffVolts = feedforward.calculate(getVelocity(), acceleration);
     //motor.setControl(velocityRequest.withVelocity(velocityRotations).withFeedForward(ffVolts));
     motor.setControl(velocityRequest.withVelocity(velocityRotations));
+    //System.out.println("Voltage: ");
   }
 
   /**
@@ -328,7 +330,8 @@ public class IntakeSlideSubsystem extends SubsystemBase {
       double error = heightMeters - currentHeight;
       double velocity =
         Math.signum(error) * Math.min(Math.abs(error) * 2.0, maxVelocity);
-      setVelocity(velocity);
+        System.out.println("Velocity:" + velocity);
+      setVelocity(velocity * 3);
     }).until(() -> {
         double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
         return Math.abs(heightMeters - currentHeight) < 0.02; // 2cm tolerance
@@ -341,7 +344,7 @@ public class IntakeSlideSubsystem extends SubsystemBase {
       double error = heightMeters - currentHeight;
       double velocity =
         Math.signum(error) * Math.min(Math.abs(error) * 2.0, maxVelocity);
-      setVelocity(velocity+0.01);
+      setVelocity(velocity+0.25);
     }).until(() -> {
         double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);
         return Math.abs(heightMeters - currentHeight) < 0.02; // 2cm tolerance

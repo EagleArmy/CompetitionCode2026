@@ -40,7 +40,8 @@ public class LimelightSubsystem extends SubsystemBase {
    */
   
   public static boolean TAmove(String Limelight){
-  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){
+    //these need the .2 clearance
+  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){ //change these TAs based on how far we want to shoot; check limelight
     return false;
   }
   else{
@@ -67,14 +68,17 @@ public class LimelightSubsystem extends SubsystemBase {
 public double getHubTA(String Limelight){
     setLimelightPipeline(Limelight, 0);
   
-// 6-7!!!!!!!!
+// // 6-7!!!!!!!!
 
-  if(LimelightHelpers.getTA(Limelight) < 0.7){
-    if(TAmoveFar(Limelight) == true){
-      ShooterSubsystem.shooterSpeedTower();
-      NeckWheelSubsystem.setNeckWheelSpeed(0);
-      if(LimelightHelpers.getTA(Limelight) < 0.5){
-    
+// TA is how far we are from the april tag 
+//its measured in percent; bigger number means closer
+  
+  if(LimelightHelpers.getTA(Limelight) < 0.7){ //these are the zones which you ACTUALLY HAVE TO SET NUMBERS FOR WE PUT THEM IN BLIND
+    if(TAmoveFar(Limelight) == true){ 
+      ShooterSubsystem.setShooterSpeed(0); //set this number!
+      NeckWheelSubsystem.setNeckWheelSpeed(0); //set this number!
+      if(LimelightHelpers.getTA(Limelight) < 0.5){ //this is on the low end of whatever the far side is!
+        //set this number properly
         return 0.5;
       }
       else{
@@ -84,9 +88,9 @@ public double getHubTA(String Limelight){
  }}
   if(LimelightHelpers.getTA(Limelight) >= 0.7 && LimelightHelpers.getTA(Limelight) < 0.9){
     if(TAmoveMid(Limelight) == true){
-      ShooterSubsystem.shooterSpeedMid();
+      ShooterSubsystem.setShooterSpeed(0);
       NeckWheelSubsystem.setNeckWheelSpeed(0);
-      if(LimelightHelpers.getTA(Limelight) < 0.5){
+      if(LimelightHelpers.getTA(Limelight) < 0.5){ 
     
     return 0.5;
   }
@@ -97,9 +101,9 @@ public double getHubTA(String Limelight){
 }}
   if(LimelightHelpers.getTA(Limelight) >= 0.9){
     if(TAmove(Limelight) == true){
-      ShooterSubsystem.shooterSpeedHub();
+      ShooterSubsystem.setShooterSpeed(0);
       NeckWheelSubsystem.setNeckWheelSpeed(0);
-      if(LimelightHelpers.getTA(Limelight) < 0.5){
+      if(LimelightHelpers.getTA(Limelight) < 0.7){
     
          return 0.5;
       }
@@ -115,21 +119,21 @@ public double getHubTA(String Limelight){
 
 
 
- public double getHubTx(String limelight) {
+ public double getHubTx(String limelight) { //tx is rotation; straightening out
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      setLimelightPipeline(limelight, VisionProfile.blueReefCenterPipeline);
+      setLimelightPipeline(limelight, 0);
 
-      return -LimelightHelpers.getTX(limelight);
+      return -LimelightHelpers.getTX(limelight); //
       
     }
     else {
-      setLimelightPipeline(limelight, VisionProfile.redReefCenterPipeline);
+      setLimelightPipeline(limelight, 0);
       return -LimelightHelpers.getTX(limelight);
     }
   }
 
 
-  public boolean limelightAlignedTx() {
+  public boolean limelightAlignedTx() { //michael has no idea what this does!!!
     if ((LimelightHelpers.getTX("limelight") <= 0.8) && (LimelightHelpers.getTX("limelight") >= -0.8)) {
       return alignmentDebouncer.calculate(true);
     }

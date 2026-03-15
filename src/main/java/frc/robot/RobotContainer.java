@@ -6,6 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -67,8 +69,8 @@ public class RobotContainer {
     private final CommandXboxController operator = new CommandXboxController(1);
 
     //top tuner constant is real robot, bottom is test
-    //public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final CommandSwerveDrivetrain drivetrain = TunerConstantsTestingRobot.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    //public final CommandSwerveDrivetrain drivetrain = TunerConstantsTestingRobot.createDrivetrain();
     
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
     //public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
@@ -97,7 +99,7 @@ public class RobotContainer {
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop())
                 ));
         NamedCommands.registerCommand("shoot",new ParallelCommandGroup(
-                new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()) , 
+                new InstantCommand(() -> m_IntakeSubsystem.start()), 
                 new InstantCommand(() ->m_NeckWheelSubsystem.start())
                 ));
         NamedCommands.registerCommand("shooter off", new ParallelCommandGroup(
@@ -110,8 +112,10 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("revUp", new InstantCommand( () -> m_ShooterSubsystem.start()));
         //yams subsystem + command 
-        NamedCommands.registerCommand("move out intake", m_IntakeSlideSubsystem.moveToHeightCommand(Meters.convertFrom(6, Inches)));
-        NamedCommands.registerCommand("move in intake", m_IntakeSlideSubsystem.moveToHeightCommand(Meters.convertFrom(0, Inches)));
+        NamedCommands.registerCommand("move out intake"
+            ,m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(5, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
+        NamedCommands.registerCommand("move in intake",
+         m_IntakeSlideSubsystem.moveToHeightCommand(Meters.convertFrom(0, Inches)));
         
         //limelight commands
         NamedCommands.registerCommand("limelight align", new ParallelCommandGroup(new InstantCommand(() -> drivetrain.applyRequest(() -> forwardStraight
@@ -124,10 +128,6 @@ public class RobotContainer {
                 .withVelocityX(0) // Reduced speed for fine adjustments
                 .withVelocityY(driver.getLeftY()))
             ), new InstantCommand(() -> LimelightSubsystem.setLimelightPipeline("limelight", 1))));
-
-
-
-
 
         autoChooser = AutoBuilder.buildAutoChooser("Right Path");
         SmartDashboard.putData("Auto Mode", autoChooser);
@@ -177,16 +177,16 @@ public class RobotContainer {
         // ));
 
         //press shooter!
-        driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterSubsystem.start()));
-        //neck wheel moves
-        driver.rightTrigger().onTrue(new ParallelCommandGroup(new InstantCommand(() -> m_NeckWheelSubsystem.start()), new InstantCommand(() -> m_IntakeSubsystem.onlyHopper())));
-        driver.rightTrigger().onFalse(new InstantCommand(() -> m_NeckWheelSubsystem.stop()));
+        // driver.rightBumper().onTrue(new InstantCommand(() -> m_ShooterSubsystem.start()));
+        // //neck wheel moves
+        // driver.rightTrigger().onTrue(new ParallelCommandGroup(new InstantCommand(() -> m_NeckWheelSubsystem.start()), new InstantCommand(() -> m_IntakeSubsystem.onlyHopper())));
+        // driver.rightTrigger().onFalse(new InstantCommand(() -> m_NeckWheelSubsystem.stop()));
 
-        //STOP EVERYTHING!!!!!!!!!!!!!
-        driver.a().onTrue(new ParallelCommandGroup(
-                new InstantCommand(() -> m_IntakeSubsystem.stop()), 
-                new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
-                new InstantCommand(() -> m_ShooterSubsystem.stop())));
+        // //STOP EVERYTHING!!!!!!!!!!!!!
+        // driver.a().onTrue(new ParallelCommandGroup(
+        //         new InstantCommand(() -> m_IntakeSubsystem.stop()), 
+        //         new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
+        //         new InstantCommand(() -> m_ShooterSubsystem.stop())));
         //ultraShooterCommand should be repurposed for stopping everything
 
         //start intake
@@ -197,18 +197,26 @@ public class RobotContainer {
         //hjopper and intake dont run at the same itme annymore
         //its just hopper and neckwheel
 
-        driver.povUp().onTrue(
-            m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
-        driver.povDown().onTrue(
-            m_IntakeSlideSubsystem.moveBackToZeroCommand(0).andThen(m_IntakeSlideSubsystem.stopCommand()));
+        // driver.povUp().onTrue(
+        //     m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
+        // driver.povDown().onTrue(
+        //     m_IntakeSlideSubsystem.moveBackToZeroCommand(0).andThen(m_IntakeSlideSubsystem.stopCommand()));
 
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        // driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // driver.leftBumper().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driver.leftBumper().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driver.rightBumper().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driver.rightBumper().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+        driver.leftTrigger().onTrue(Commands.runOnce(SignalLogger::start));
+        driver.rightTrigger().onTrue(Commands.runOnce(SignalLogger::stop));
+
+        driver.leftBumper().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driver.leftBumper().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driver.rightBumper().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driver.rightBumper().and(driver.x()).whileTrue(m_NeckWheelSubsystem.sysIdQuasistatic(Direction.kReverse));
 
         //testing speeds for mid wheel
         // driver.x().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start())); 
@@ -220,28 +228,33 @@ public class RobotContainer {
         //COMPETITION BUTTON BINDINGS
 
         //DRIVER
-        // driver.rightTrigger().whileTrue(
-        //      drivetrain.applyRequest(() ->
-        //         drive.withVelocityX(-driver.getLeftY() * MaxSpeed/10) // Drive forward with negative Y (forward)
-        //             .withVelocityY(driver.getLeftX() * MaxSpeed/10) // Drive left with negative X (left)
-        //             .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        //     )
-        // );
+        driver.rightBumper().whileTrue(
+             drivetrain.applyRequest(() ->
+                drive.withVelocityX(-driver.getLeftY() * MaxSpeed/10) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed/10) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            )
+        );
 
         //this is just the intake moving 
-        // driver.y().onTrue(new ParallelCommandGroup(
-        //         new InstantCommand(() -> m_IntakeSubsystem.start()) , 
-        //         new InstantCommand(() -> m_NeckWheelSubsystem.reverse())
-        //         ));            
-        // driver.x().onTrue(new ParallelCommandGroup(
-        //         new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
-        //         new InstantCommand(() -> m_NeckWheelSubsystem.stop())
-        //         ));
+        driver.y().onTrue(new ParallelCommandGroup(
+                new InstantCommand(() -> m_IntakeSubsystem.start()) , 
+                new InstantCommand(() -> m_NeckWheelSubsystem.reverse())
+                ));            
+        driver.x().onTrue(new ParallelCommandGroup(
+                new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
+                new InstantCommand(() -> m_NeckWheelSubsystem.stop())
+                ));
 
-        // driver.leftTrigger().whileTrue(new AutomaticMiddleWheel(m_MiddleWheelSubsystem));
+        driver.leftTrigger().whileTrue(new AutomaticMiddleWheel(m_MiddleWheelSubsystem));
 
-        // // reset the field centric
-        //driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        driver.rightTrigger().whileTrue(new ParallelCommandGroup( 
+            new InstantCommand(() -> m_NeckWheelSubsystem.start()), 
+            new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()), 
+            new InstantCommand(() -> m_IntakeSubsystem.setIntakeSpeed(0.3))));
+
+        // // // reset the field centric
+        driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         // driver.povUp().whileTrue(drivetrain.applyRequest(() ->
         //     forwardStraight.withVelocityX(0.5).withVelocityY(0))
@@ -252,17 +265,21 @@ public class RobotContainer {
 
         //OPERATOR
         
-        // operator.x().debounce(0.2).whileTrue(
-                //     drivetrain.applyRequest(() -> forwardStraight
-                //         .withRotationalRate(-m_LimelightSubsystem.getHubTx("limelight")/Constants.VisionProfile.hubProportionalTx)
-                //         .withVelocityX(m_LimelightSubsystem.getHubTA("limelight")) // Reduced speed for fine adjustments
-                //         .withVelocityY(driver.getLeftY())
-                //     )
-                // );
-        // operator.leftBumper().onTrue(
-        //     m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(6, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
-        // operator.rightBumper().onTrue(
-        //     m_IntakeSlideSubsystem.moveBackToZeroCommand(0).andThen(m_IntakeSlideSubsystem.stopCommand()));
+        operator.leftTrigger().whileTrue(
+                    drivetrain.applyRequest(() -> forwardStraight
+                        .withRotationalRate(m_LimelightSubsystem.getHubTx("limelight")/10.5) //this rotates it
+                        .withVelocityX(m_LimelightSubsystem.getHubTA("limelight")/10.5) // Reduced speed for fine adjustments 
+                        //this moves it closer to the april tag
+                        .withVelocityY(-driver.getLeftY()) //manually driving left and right
+                    )
+                );
+
+        operator.leftBumper().onTrue(
+            m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(5, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
+        operator.rightBumper().onTrue(
+            m_IntakeSlideSubsystem.moveBackToZeroCommand(0.01).andThen(m_IntakeSlideSubsystem.stopCommand()));
+
+        operator.povDown().onTrue(m_IntakeSlideSubsystem.stopCommand());
 
         // operator.a().onTrue(new ParallelCommandGroup(
         //         new InstantCommand(() -> m_IntakeSubsystem.stop()), 
@@ -270,19 +287,17 @@ public class RobotContainer {
         //         new InstantCommand(() -> m_ShooterwoPIDSubsystem.stop())
         //         ));
 
-        // operator.y().onTrue(new InstantCommand(() -> m_ShooterwoPIDSubsystem.start()));
+        operator.a().onTrue(new StopEverythingCommand(m_NeckWheelSubsystem, m_ShooterSubsystem, m_IntakeSubsystem));
+
+         operator.y().onTrue(new InstantCommand(() -> m_ShooterwoPIDSubsystem.start()));
 
         // operator.rightTrigger().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.start()));
-        // operator.rightTrigger().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.stop()));
+        // operator.rightTrigger().onFalse(new InstantCommand(() -> m_NeckWheelSubsystem.stop()));
 
         // driver.leftTrigger().whileTrue(new InstantCommand(() -> m_MiddleWheelSubsystem.reverse()));
         //driver.leftBumper().whileTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start()));
         // driver.leftBumper().and(driver.leftTrigger()).whileFalse(new InstantCommand(() -> m_MiddleWheelSubsystem.stop()));
         // //driver.leftBumper().whileFalse(new InstantCommand( () -> m_MiddleWheelSubsystem.stop()));
-       
-
-
-
         
          // Reset the field-centric heading on left bumper press.
          driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

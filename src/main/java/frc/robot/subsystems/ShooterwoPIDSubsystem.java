@@ -57,8 +57,8 @@ public class ShooterwoPIDSubsystem extends SubsystemBase {
         
             public void start()
             {
-                ShooterMotor.set(shooterSpeed); 
-                ShooterMotor2.set(-shooterSpeed); //2 needs to be reversed
+                ShooterMotor.set(-shooterSpeed); 
+                ShooterMotor2.set(shooterSpeed); //2 needs to be reversed
                 System.out.println("shooterSpeed: " + shooterSpeed);
             }
         
@@ -70,8 +70,8 @@ public class ShooterwoPIDSubsystem extends SubsystemBase {
         
             public void reverse() 
             {
-                ShooterMotor.set(-shooterSpeed);
-                ShooterMotor2.set(shooterSpeed);
+                ShooterMotor.set(shooterSpeed);
+                ShooterMotor2.set(-shooterSpeed);
             }
         
             public void stop()

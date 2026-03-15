@@ -116,6 +116,11 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeSpeed = newIntake;
         hopperSpeed = newHopper;
     }
+
+    public void setIntakeSpeed(double newSpeed)
+    {
+        IntakeMotor.set(-newSpeed);
+    }
     
     @Override
     public void periodic() 

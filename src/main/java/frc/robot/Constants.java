@@ -54,9 +54,9 @@ public class Constants {
   public static class ShooterConstants {
     // public static final int ShooterMotorID = 23;
     public static final int ShooterMotorID = 50; //the motor on the right needs to move in reverse
-    public static final int ShooterMotorID2 = 51;
+    public static final int ShooterMotorID2 = 49;
     
-    public static double shooterSpeed = 1;
+    public static double shooterSpeed = .4;
     //OK BTW the motor moves counterclockwise if you're facing the "tape" or the talonFX part is facing away from you
   }
 
@@ -78,8 +78,8 @@ public class Constants {
 
 
   public static class NeckWheelConstants {
-    public static final int NeckWheelMotorID = 49;
-    public static double NeckWheelSpeed = 0.40;
+    public static final int NeckWheelMotorID = 51;
+    public static double NeckWheelSpeed = 0.35;
   }
   
       public class VisionProfile {
@@ -91,17 +91,10 @@ public class Constants {
         public static int autoPipeline = 0;
 
         /* Calibrated elevator limelight pipelines */
-        public static int reefPipeline_Test = 0;
-        public static int blueReefCenterPipeline = 1;
-        public static int blueReefLeftPipeline = 1;
-        public static int blueReefRightPipeline = 3;
-        public static int redReefCenterPipeline = 4;
-        public static int redReefLeftPipeline = 4;
-        public static int redReedRightPipeline = 5;
+
 
         /* Proportional limits for front limelight */
-        public static double hubProportionalTx = 9;
-        public static double algaeProportionalTx = 7.5;
+        public static double hubProportionalTx = 5;
     }
 
     public class LEDConstants{
