@@ -108,18 +108,18 @@ public class NeckWheelSubsystem extends SubsystemBase {
             NeckWheelMotor.set( 0 );
         }
     
-        public static void setNeckWheelSpeed (double newSpeed){
+    public static void setNeckWheelSpeed (double newSpeed){
             NeckWheelspeed = newSpeed;
     }
     public void increasetestingspeed() 
     {
         NeckWheelspeed += 0.05;
-        System.out.println("Testing Speed: " + NeckWheelspeed);
+        System.out.println("NECKWHEEL Speed: " + NeckWheelspeed);
     }
     public void decreasetestingspeed() 
     {
         NeckWheelspeed -= 0.05;
-        System.out.println("Testing Speed: " + NeckWheelspeed);
+        System.out.println("NECKWHEEL Speed: " + NeckWheelspeed);
     }
 
     public Command joystickDriveCommand(DoubleSupplier output) {
