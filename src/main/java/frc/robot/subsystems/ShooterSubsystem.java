@@ -11,12 +11,19 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.util.sendable.SendableRegistry;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,8 +46,28 @@ public class ShooterSubsystem extends SubsystemBase {
     //shootermotor2 is canID 2 how convenient
 
         public static double shooterSpeed;
+        private final DutyCycleOut m_CycleOut = new DutyCycleOut(0);
+        private final VoltageOut m_sysIdControl = new VoltageOut(0);
+
+        private final SysIdRoutine m_sysIdRoutine =
+            new SysIdRoutine(
+                new SysIdRoutine.Config(
+                    null,         // Use default ramp rate (1 V/s)
+                    Volts.of(4), // Reduce dynamic voltage to 4 to prevent brownout
+                    null,          // Use default timeout (10 s)
+                                        // Log state with Phoenix SignalLogger class
+                    state -> SignalLogger.writeString("state", state.toString())
+                ),
+                new SysIdRoutine.Mechanism(
+                    volts -> ShooterMotor2.setControl(m_sysIdControl.withOutput(volts)),
+                    null,
+                    this
+                )
+            );
+           
             public ShooterSubsystem() 
-            {
+            { 
+                ShooterMotor.setControl(new Follower(ShooterMotor2.getDeviceID(), MotorAlignmentValue.Opposed));
                 shooterSpeed = ShooterConstants.shooterSpeed;
         
                addChild("ShooterMotor2", ShooterMotor2);
@@ -59,18 +86,18 @@ public class ShooterSubsystem extends SubsystemBase {
                ShooterMotor.getConfigurator().apply( ShooterMotorConfiguration );
         
             var slot0ConfigsRight = ShooterMotor2Configuration.Slot0;
-            slot0ConfigsRight.kS = 0.30474; // Add 0.25 V output to overcome static friction
-            slot0ConfigsRight.kV = 0.12273; // A velocity target of 1 rps results in 0.12 V output
-            slot0ConfigsRight.kA = 0.048319; // An acceleration of 1 rps/s requires 0.01 V output
-            slot0ConfigsRight.kP = 0.50684; // A position error of 2.5 rotations results in 12 V output   //4.8 originally 
+            slot0ConfigsRight.kS = 0.36568; // Add 0.25 V output to overcome static friction
+            slot0ConfigsRight.kV = 0.12303; // A velocity target of 1 rps results in 0.12 V output
+            slot0ConfigsRight.kA = 0.020527; // An acceleration of 1 rps/s requires 0.01 V output
+            slot0ConfigsRight.kP = 0.21348; // A position error of 2.5 rotations results in 12 V output   //4.8 originally 
             slot0ConfigsRight.kI = 0; // no output for integrated error
             slot0ConfigsRight.kD = 0; // A velocity error of 1 rps results in 0.1 V output
         
             var slot0Configs = ShooterMotorConfiguration.Slot0;
-            slot0Configs.kS = 0.30474; // Add 0.25 V output to overcome static friction
-            slot0Configs.kV = 0.12273; // A velocity target of 1 rps results in 0.12 V output
-            slot0Configs.kA = 0.048319; // An acceleration of 1 rps/s requires 0.01 V output
-            slot0Configs.kP = 0.50684; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
+            slot0Configs.kS = 0.36568; // Add 0.25 V output to overcome static friction
+            slot0Configs.kV = 0.12303; // A velocity target of 1 rps results in 0.12 V output
+            slot0Configs.kA = 0.020527; // An acceleration of 1 rps/s requires 0.01 V output
+            slot0Configs.kP = 0.21348; // A position error of 2.5 rotations results in 12 V output   //4.8 originally
             slot0Configs.kI = 0; // no output for integrated error
             slot0Configs.kD = 0; // A velocity error of 1 rps results in 0.1 V output
         
@@ -148,6 +175,15 @@ public class ShooterSubsystem extends SubsystemBase {
             //     shooterSpeed = 0.75;
             // }
 
+            public Command joystickDriveCommand(DoubleSupplier output) {
+        return run(() -> ShooterMotor2.setControl(m_CycleOut.withOutput(output.getAsDouble())));
+    }
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction);
+    }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.dynamic(direction);
+    }
     
 
     @Override

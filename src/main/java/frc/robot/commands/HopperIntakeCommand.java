@@ -1,6 +1,6 @@
 // package frc.robot.commands;
 
-// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.comman d.Command;
 // import frc.robot.subsystems.HopperSubsystem;
 // import frc.robot.subsystems.IntakeSubsystem;
 
@@ -12,7 +12,7 @@
 //     public HopperIntakeCommand(HopperSubsystem subsystem1, IntakeSubsystem subsystem2){
 //         m_HopperSubsystem = subsystem1;
 //         m_IntakeSubsystem = subsystem2;
-//         addRequirements(m_HopperSubsystem, m_IntakeSubsystem);
+//         addRequirements(m_HopperSubsystem, m_IntakeSubsystem);  
 //     }
 
 //     @Override 

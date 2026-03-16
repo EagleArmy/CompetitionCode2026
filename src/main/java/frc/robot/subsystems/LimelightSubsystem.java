@@ -41,7 +41,7 @@ public class LimelightSubsystem extends SubsystemBase {
   
   public static boolean TAmove(String Limelight){
     //these need the .2 clearance
-  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){ //change these TAs based on how far we want to shoot; check limelight
+  if(LimelightHelpers.getTA(Limelight) >= 2.7){ //change these TAs based on how far we want to shoot; check limelight
     return false;
   }
   else{
@@ -49,7 +49,7 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 }
   public static boolean TAmoveMid(String Limelight){
-  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){
+  if(LimelightHelpers.getTA(Limelight) < 2.7 && LimelightHelpers.getTA(Limelight) >= 0.8){
     return false;
   }
   else{
@@ -57,7 +57,7 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 }
   public static boolean TAmoveFar(String Limelight){
-  if(LimelightHelpers.getTA(Limelight) <= 0.4 && LimelightHelpers.getTA(Limelight) >= 0.6){
+  if(LimelightHelpers.getTA(Limelight) < 0.8){
     return false;
   }
   else{
@@ -73,11 +73,11 @@ public double getHubTA(String Limelight){
 // TA is how far we are from the april tag 
 //its measured in percent; bigger number means closer
   
-  if(LimelightHelpers.getTA(Limelight) < 0.7){ //these are the zones which you ACTUALLY HAVE TO SET NUMBERS FOR WE PUT THEM IN BLIND
+  if(LimelightHelpers.getTA(Limelight) < 0.8){ //these are the zones which you ACTUALLY HAVE TO SET NUMBERS FOR WE PUT THEM IN BLIND
     if(TAmoveFar(Limelight) == true){ 
-      ShooterSubsystem.setShooterSpeed(0); //set this number!
-      NeckWheelSubsystem.setNeckWheelSpeed(0); //set this number!
-      if(LimelightHelpers.getTA(Limelight) < 0.5){ //this is on the low end of whatever the far side is!
+      ShooterSubsystem.setShooterSpeed(0.6); //set this number!
+      NeckWheelSubsystem.setNeckWheelSpeed(0.6); //set this number!
+      if(LimelightHelpers.getTA(Limelight) < 0.8){ //this is on the low end of whatever the far side is!
         //set this number properly
         return 0.5;
       }
@@ -86,11 +86,12 @@ public double getHubTA(String Limelight){
       return -0.5;
     }
  }}
-  if(LimelightHelpers.getTA(Limelight) >= 0.7 && LimelightHelpers.getTA(Limelight) < 0.9){
+  if(LimelightHelpers.getTA(Limelight) >= 0.8 && LimelightHelpers.getTA(Limelight) < 2.7){
     if(TAmoveMid(Limelight) == true){
-      ShooterSubsystem.setShooterSpeed(0);
-      NeckWheelSubsystem.setNeckWheelSpeed(0);
-      if(LimelightHelpers.getTA(Limelight) < 0.5){ 
+      ShooterSubsystem.setShooterSpeed(1);
+      NeckWheelSubsystem.setNeckWheelSpeed(0.53);
+      System.out.println("Center RAN");
+      if(LimelightHelpers.getTA(Limelight) < 0.8){ 
     
     return 0.5;
   }
@@ -99,11 +100,13 @@ public double getHubTA(String Limelight){
     return -0.5;
   }
 }}
-  if(LimelightHelpers.getTA(Limelight) >= 0.9){
+//close
+  if(LimelightHelpers.getTA(Limelight) >= 2.7){
     if(TAmove(Limelight) == true){
-      ShooterSubsystem.setShooterSpeed(0);
-      NeckWheelSubsystem.setNeckWheelSpeed(0);
-      if(LimelightHelpers.getTA(Limelight) < 0.7){
+      ShooterSubsystem.setShooterSpeed(.43); //.43
+      NeckWheelSubsystem.setNeckWheelSpeed(.43);
+      System.out.println("");
+      if(LimelightHelpers.getTA(Limelight) < 0.8){
     
          return 0.5;
       }

@@ -112,9 +112,9 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("revUp", new InstantCommand( () -> m_ShooterSubsystem.start()));
         //yams subsystem + command 
-        NamedCommands.registerCommand("move out intake"
+        NamedCommands.registerCommand("intake move out"
             ,m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(5, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
-        NamedCommands.registerCommand("move in intake",
+        NamedCommands.registerCommand("intake move in",
          m_IntakeSlideSubsystem.moveToHeightCommand(Meters.convertFrom(0, Inches)));
         
         //limelight commands
@@ -210,23 +210,19 @@ public class RobotContainer {
         // driver.rightBumper().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // driver.rightBumper().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        driver.leftTrigger().onTrue(Commands.runOnce(SignalLogger::start));
-        driver.rightTrigger().onTrue(Commands.runOnce(SignalLogger::stop));
+        // driver.leftTrigger().onTrue(Commands.runOnce(SignalLogger::start));
+        // driver.rightTrigger().onTrue(Commands.runOnce(SignalLogger::stop));
 
-        driver.leftBumper().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driver.leftBumper().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driver.rightBumper().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driver.rightBumper().and(driver.x()).whileTrue(m_NeckWheelSubsystem.sysIdQuasistatic(Direction.kReverse));
+        // driver.leftBumper().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driver.leftBumper().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driver.rightBumper().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driver.rightBumper().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        //testing speeds for mid wheel
-        // driver.x().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start())); 
-        // driver.b().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.stop()));
-        // driver.y().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.increasetestingspeed()));
-        // driver.a().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.decreasetestingspeed()));
-        // driver.rightBumper().onTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.reverse()));
-
-        //COMPETITION BUTTON BINDINGS
-
+        // driver.leftBumper().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // driver.leftBumper().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // driver.rightBumper().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // driver.rightBumper().and(driver.x()).whileTrue(m_NeckWheelSubsystem.sysIdQuasistatic(Direction.kReverse));
+        
         //DRIVER
         driver.rightBumper().whileTrue(
              drivetrain.applyRequest(() ->
@@ -253,15 +249,15 @@ public class RobotContainer {
             new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()), 
             new InstantCommand(() -> m_IntakeSubsystem.setIntakeSpeed(0.3))));
 
-        // // // reset the field centric
+        // //  reset the field centric
         driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        // driver.povUp().whileTrue(drivetrain.applyRequest(() ->
-        //     forwardStraight.withVelocityX(0.5).withVelocityY(0))
-        // );
-        // driver.povDown().whileTrue(drivetrain.applyRequest(() ->
-        //     forwardStraight.withVelocityX(-0.5).withVelocityY(0))
-        // );
+        driver.povUp().whileTrue(drivetrain.applyRequest(() ->
+            forwardStraight.withVelocityX(0.5).withVelocityY(0))
+        );
+        driver.povDown().whileTrue(drivetrain.applyRequest(() ->
+            forwardStraight.withVelocityX(-0.5).withVelocityY(0))
+        );
 
         //OPERATOR
         
@@ -281,15 +277,15 @@ public class RobotContainer {
 
         operator.povDown().onTrue(m_IntakeSlideSubsystem.stopCommand());
 
-        // operator.a().onTrue(new ParallelCommandGroup(
-        //         new InstantCommand(() -> m_IntakeSubsystem.stop()), 
-        //         new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
-        //         new InstantCommand(() -> m_ShooterwoPIDSubsystem.stop())
-        //         ));
+        operator.a().onTrue(new ParallelCommandGroup(
+                new InstantCommand(() -> m_IntakeSubsystem.stop()), 
+                new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
+                new InstantCommand(() -> m_ShooterSubsystem.stop())
+                ));
 
-        operator.a().onTrue(new StopEverythingCommand(m_NeckWheelSubsystem, m_ShooterSubsystem, m_IntakeSubsystem));
+        //operator.a().onTrue(new StopEverythingCommand(m_NeckWheelSubsystem, m_ShooterSubsystem, m_IntakeSubsystem));
 
-         operator.y().onTrue(new InstantCommand(() -> m_ShooterwoPIDSubsystem.start()));
+        operator.y().onTrue(new InstantCommand(() -> m_ShooterSubsystem.start()));
 
         // operator.rightTrigger().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.start()));
         // operator.rightTrigger().onFalse(new InstantCommand(() -> m_NeckWheelSubsystem.stop()));
