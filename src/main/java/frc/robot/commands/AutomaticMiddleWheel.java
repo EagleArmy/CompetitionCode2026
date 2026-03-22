@@ -22,12 +22,8 @@ public class AutomaticMiddleWheel extends Command{
     @Override
     public void execute (){
         
-        if(driver.getX() >= 0)
-        {
             m_MiddleWheelSubsystem.start();
-        } else {
-            m_MiddleWheelSubsystem.reverse();
-        }
+            System.out.println("FORWARD");
     }
 
     @Override

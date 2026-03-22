@@ -306,6 +306,18 @@ public class IntakeSlideSubsystem extends SubsystemBase {
     return maxheight;
   }
 
+  public void moveItOut() {
+    motor.set(-.20);
+  }
+
+  public void moveItIn() {
+    motor.set(.20);
+  }
+
+  public void stop() {
+    motor.set(0);
+  }
+
   /**
    * Creates a command to set the elevator to a specific height.
    * @param heightMeters The target height in meters
@@ -330,7 +342,7 @@ public class IntakeSlideSubsystem extends SubsystemBase {
       double error = heightMeters - currentHeight;
       double velocity =
         Math.signum(error) * Math.min(Math.abs(error) * 2.0, maxVelocity);
-        System.out.println("Velocity:" + velocity);
+        //System.out.println("Velocity:" + velocity);
       setVelocity(velocity * 3);
     }).until(() -> {
         double currentHeight = getPosition() * (2.0 * Math.PI * drumRadius);

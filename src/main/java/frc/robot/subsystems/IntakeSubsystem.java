@@ -89,10 +89,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void onlyIntake()
     {
         IntakeMotor.set(-intakeSpeed);
+        System.out.println("INTAKE IS RUNNING");
     }
+
     public void onlyHopper()
     {
         HopperMotor.set(hopperSpeed);
+        System.out.println("HOPPER IS RUNNING");
     }
 
     public void stop()
@@ -121,7 +124,11 @@ public class IntakeSubsystem extends SubsystemBase {
     {
         IntakeMotor.set(-newSpeed);
     }
-    
+     public void setHopperSpeed(double newSpeed)
+    {
+        HopperMotor.set(newSpeed);
+    }
+
     @Override
     public void periodic() 
     {

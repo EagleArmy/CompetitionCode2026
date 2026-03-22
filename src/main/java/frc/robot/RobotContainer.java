@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -19,6 +21,9 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,15 +48,21 @@ import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.MiddleWheelSubsystem;
 // import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ShooterwoPIDSubsystem;
 import frc.robot.subsystems.NeckWheelSubsystem;
 import frc.robot.commands.AutomaticMiddleWheel;
-import frc.robot.commands.StopEverythingCommand;
+import frc.robot.commands.EmergencyIntakeCommand;
+import frc.robot.commands.IntakeOnlyCommand;
+import frc.robot.commands.ManualIntakeSlideMove;
+import frc.robot.commands.ManualIntakeSlideMoveIn;
+import frc.robot.commands.ReverseIntakeCommand;
+import frc.robot.commands.RunShooterCommand;
 
 
 
 public class RobotContainer {
-    private boolean shootingSpot = LimelightSubsystem.TAmove("limelight");
+    //private boolean shootingSpot = LimelightSubsystem.TAmove("limelight");
+    private double shooterSpeed = ShooterSubsystem.shooterSpeed;
+    private double neckSpeed = NeckWheelSubsystem.NeckWheelspeed;
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -74,22 +85,64 @@ public class RobotContainer {
     //public final CommandSwerveDrivetrain drivetrain = TunerConstantsTestingRobot.createDrivetrain();
     
     public final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
-    //public final HopperSubsystem m_HopperSubsystem = new HopperSubsystem();
     public final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
     public final LimelightSubsystem m_LimelightSubsystem = new LimelightSubsystem();
     public final MiddleWheelSubsystem m_MiddleWheelSubsystem = new MiddleWheelSubsystem();
     public final NeckWheelSubsystem m_NeckWheelSubsystem = new NeckWheelSubsystem();
     public final IntakeSlideSubsystem m_IntakeSlideSubsystem = new IntakeSlideSubsystem();
-    public final ShooterwoPIDSubsystem m_ShooterwoPIDSubsystem = new ShooterwoPIDSubsystem();
+
+    public boolean isHubActive() { //i literally ripped this from wpilib
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if(alliance.isEmpty()){
+            return false;
+        }
+        if(DriverStation.isAutonomousEnabled()){
+            return true;
+        }
+
+        double matchTime = DriverStation.getMatchTime();
+        String gameData = DriverStation.getGameSpecificMessage();
+        if(gameData.isEmpty()){
+            return true;
+        }
+        boolean redInactiveFirst = false;
+        switch (gameData.charAt(0)) {
+            case 'R' -> redInactiveFirst = true;
+            case 'B' -> redInactiveFirst = false;
+        
+            default -> {
+                return true;
+            }
+        }
+
+        boolean shift1Active = switch(alliance.get()) {
+            case Red -> !redInactiveFirst;
+            case Blue -> redInactiveFirst;
+        };
+
+        if (matchTime > 130) {
+            return true;  
+        }
+        else if (matchTime > 105){
+            return shift1Active;
+        } else if (matchTime > 80) {
+            return !shift1Active;
+        } else if (matchTime > 55) {
+            return shift1Active; 
+        } else if (matchTime > 30) {
+            return shift1Active;
+        } else {
+            return true;
+        }
+    }
 
     /* Path follower */
     //Eddie is a . (Verified) 
    private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-        CameraServer.startAutomaticCapture();
-        
-// CameraServer.startAutomaticCapture().getKind().kHttp; Michael do this now - Michael
+        //CameraServer.startAutomaticCapture();
+        //suspicion the camera causes too much stress to the rio so the swerve disconnects?
 
         //reg subsystem
         NamedCommands.registerCommand("intake", new ParallelCommandGroup(
@@ -100,16 +153,23 @@ public class RobotContainer {
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop())
                 ));
         NamedCommands.registerCommand("shoot",new ParallelCommandGroup(
-                new InstantCommand(() -> m_IntakeSubsystem.start()), 
+                new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()), 
+                new InstantCommand(() -> m_IntakeSubsystem.setIntakeSpeed(.3)),
                 new InstantCommand(() ->m_NeckWheelSubsystem.start())
                 ));
-        NamedCommands.registerCommand("shooter off", new ParallelCommandGroup(
-                new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
-                new InstantCommand(() ->m_NeckWheelSubsystem.stop()),
+        // NamedCommands.registerCommand("shooter off", new ParallelCommandGroup(
+        //         new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
+        //         new InstantCommand(() ->m_NeckWheelSubsystem.stop()),
+        //         new InstantCommand(() -> m_ShooterSubsystem.stop())
+        //         ));
+
+        NamedCommands.registerCommand("STOP EVERYTHING", new ParallelCommandGroup(
+                new InstantCommand(() -> m_IntakeSubsystem.stop()), 
+                new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
                 new InstantCommand(() -> m_ShooterSubsystem.stop())
                 ));
-        NamedCommands.registerCommand("middle wheel start", new InstantCommand(() -> m_MiddleWheelSubsystem.start()));
-        NamedCommands.registerCommand("middle wheel stop", new InstantCommand(()-> m_MiddleWheelSubsystem.stop()));   
+        // NamedCommands.registerCommand("middle wheel start", new InstantCommand(() -> m_MiddleWheelSubsystem.start()));
+        // NamedCommands.registerCommand("middle wheel stop", new InstantCommand(()-> m_MiddleWheelSubsystem.stop()));   
         
         NamedCommands.registerCommand("revUp", new InstantCommand( () -> m_ShooterSubsystem.start()));
         //yams subsystem + command 
@@ -123,17 +183,22 @@ public class RobotContainer {
                 .withRotationalRate(-m_LimelightSubsystem.getHubTx("limelight")/Constants.VisionProfile.hubProportionalTx)
                 .withVelocityX(0) // Reduced speed for fine adjustments
                 .withVelocityY(driver.getLeftY()))
-            ), new InstantCommand(() -> LimelightSubsystem.setLimelightPipeline("limelight", 1))));
-        NamedCommands.registerCommand("limelight far align", new ParallelCommandGroup(new InstantCommand(() -> drivetrain.applyRequest(() -> forwardStraight
-                .withRotationalRate(-m_LimelightSubsystem.getHubTx("limelight")/Constants.VisionProfile.hubProportionalTx)
-                .withVelocityX(0) // Reduced speed for fine adjustments
-                .withVelocityY(driver.getLeftY()))
-            ), new InstantCommand(() -> LimelightSubsystem.setLimelightPipeline("limelight", 1))));
+            ), new InstantCommand(() -> LimelightSubsystem.setLimelightPipeline("limelight", 0))));
+        // NamedCommands.registerCommand("limelight far align", new ParallelCommandGroup(new InstantCommand(() -> drivetrain.applyRequest(() -> forwardStraight
+        //         .withRotationalRate(-m_LimelightSubsystem.getHubTx("limelight")/Constants.VisionProfile.hubProportionalTx)
+        //         .withVelocityX(0) // Reduced speed for fine adjustments
+        //         .withVelocityY(driver.getLeftY()))
+        //     ), new InstantCommand(() -> LimelightSubsystem.setLimelightPipeline("limelight", 0))));
 
-        autoChooser = AutoBuilder.buildAutoChooser("Right Path");
+        autoChooser = AutoBuilder.buildAutoChooser("move back and shoot and stop");
+        
         SmartDashboard.putData("Auto Mode", autoChooser);
-        SmartDashboard.putBoolean("SHOOT", shootingSpot);
-
+        
+        SmartDashboard.putNumber("SHOOTER SPEED", shooterSpeed);
+        SmartDashboard.putNumber("NECKWHEEL SPEED", neckSpeed);
+        SmartDashboard.putNumber("LIMELIGHT DISTANCE", LimelightHelpers.getTA("limelight"));
+        SmartDashboard.getNumber("Match Time", DriverStation.getMatchTime()); //moved these 2 underneath 3-20-26 8:49am; didnt deploy it yet
+        SmartDashboard.getBoolean("HUB ACTIVE?", isHubActive());
         configureBindings();
 
         // Warmup PathPlanner to avoid Java pauses
@@ -153,14 +218,17 @@ public class RobotContainer {
             )
         );  
 
+        //m_IntakeSubsystem.setDefaultCommand(new IntakeCommand(m_IntakeSubsystem));
+        
 
-        driver.povUp().whileTrue(drivetrain.applyRequest(() ->
-             forwardStraight.withVelocityX(0.5).withVelocityY(0))
-        );
 
-         driver.povDown().whileTrue(drivetrain.applyRequest(() ->
-             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
-        );
+        // driver.povUp().whileTrue(drivetrain.applyRequest(() ->
+        //      forwardStraight.withVelocityX(0.5).withVelocityY(0))
+        // );
+
+        //  driver.povDown().whileTrue(drivetrain.applyRequest(() ->
+        //      forwardStraight.withVelocityX(-0.5).withVelocityY(0))
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -168,9 +236,6 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-
-        
-
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -191,22 +256,18 @@ public class RobotContainer {
             )
         );
 
-        //this is just the intake moving 
-        driver.y().onTrue(new ParallelCommandGroup(
-                new InstantCommand(() -> m_IntakeSubsystem.start()) , 
-                new InstantCommand(() -> m_NeckWheelSubsystem.reverse())
-                ));            
-        driver.x().onTrue(new ParallelCommandGroup(
-                new InstantCommand(() -> m_IntakeSubsystem.stop()) , 
-                new InstantCommand(() -> m_NeckWheelSubsystem.stop())
-                ));
+        //this is just the intake moving         
+        driver.a().whileTrue(
+                drivetrain.applyRequest(() -> forwardStraight
+                    .withRotationalRate(m_LimelightSubsystem.getHubTx("limelight")/10.5) //this rotates it
+                    //.withVelocityX(m_LimelightSubsystem.getHubTA("limelight")/10.5) // Reduced speed for fine adjustments 
+                    //this moves it closer to the april tag
+                    .withVelocityY(-driver.getLeftY()) //manually driving left and right
+                )
+            );
 
         driver.leftTrigger().whileTrue(new AutomaticMiddleWheel(m_MiddleWheelSubsystem));
-
-        driver.rightTrigger().whileTrue(new ParallelCommandGroup( 
-            new InstantCommand(() -> m_NeckWheelSubsystem.start()), 
-            new InstantCommand(() -> m_IntakeSubsystem.onlyHopper()), 
-            new InstantCommand(() -> m_IntakeSubsystem.setIntakeSpeed(0.3))));
+        driver.rightTrigger().whileTrue(new RunShooterCommand(m_NeckWheelSubsystem, m_IntakeSubsystem, m_ShooterSubsystem));
 
         // //  reset the field centric
         driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -219,21 +280,21 @@ public class RobotContainer {
         );
 
         //OPERATOR
-        
-        operator.leftTrigger().whileTrue(
-                    drivetrain.applyRequest(() -> forwardStraight
-                        .withRotationalRate(m_LimelightSubsystem.getHubTx("limelight")/10.5) //this rotates it
-                        .withVelocityX(m_LimelightSubsystem.getHubTA("limelight")/10.5) // Reduced speed for fine adjustments 
-                        //this moves it closer to the april tag
-                        .withVelocityY(-driver.getLeftY()) //manually driving left and right
-                    )
-                );
 
         operator.leftBumper().onTrue(
             m_IntakeSlideSubsystem.moveToHeightCommand(-(Meters.convertFrom(5, Inches))).andThen(m_IntakeSlideSubsystem.stopCommand()));
         operator.rightBumper().onTrue(
             m_IntakeSlideSubsystem.moveBackToZeroCommand(0.01).andThen(m_IntakeSlideSubsystem.stopCommand()));
 
+        operator.leftTrigger().whileTrue(new EmergencyIntakeCommand(m_IntakeSubsystem, m_NeckWheelSubsystem));
+        operator.rightTrigger().whileTrue(new IntakeOnlyCommand(m_IntakeSubsystem));
+        //these down here are for manually moving the intake out if we get jammed
+        operator.povLeft().whileTrue(new ManualIntakeSlideMove(m_IntakeSlideSubsystem));
+        operator.povRight().whileTrue(new ManualIntakeSlideMoveIn(m_IntakeSlideSubsystem));
+
+        //adding x and leftTrig since intake keeps getting jammed
+        operator.x().whileTrue(new ReverseIntakeCommand(m_IntakeSubsystem));
+        
         operator.povDown().onTrue(m_IntakeSlideSubsystem.stopCommand());
 
         operator.a().onTrue(new ParallelCommandGroup(
@@ -241,32 +302,25 @@ public class RobotContainer {
                 new InstantCommand(() -> m_NeckWheelSubsystem.stop()),
                 new InstantCommand(() -> m_ShooterSubsystem.stop())
                 ));
-
-        //operator.a().onTrue(new StopEverythingCommand(m_NeckWheelSubsystem, m_ShooterSubsystem, m_IntakeSubsystem));
-
+        
+        operator.b().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.neckSpit(.85)));
         operator.y().onTrue(new InstantCommand(() -> m_ShooterSubsystem.start()));
 
         operator.povUp().onTrue(new InstantCommand(() -> m_ShooterSubsystem.increaseshooterSpeed()));
+        // operator.povUp().onTrue( new InstantCommand(() -> m_ShooterSubsystem.setShooterSpeed(0.63)));
+        // operator.povDown().onTrue( new InstantCommand(() -> m_ShooterSubsystem.setShooterSpeed(0.48)));
         operator.povDown().onTrue(new InstantCommand(() -> m_ShooterSubsystem.decreaseshooterSpeed()));
-        operator.povLeft().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.increasetestingspeed()));
-        operator.povRight().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.decreasetestingspeed()));
+        // operator.povLeft().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.increasetestingspeed()));
+        // operator.povRight().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.decreasetestingspeed()));
 
-        // operator.rightTrigger().onTrue(new InstantCommand(() -> m_NeckWheelSubsystem.start()));
-        // operator.rightTrigger().onFalse(new InstantCommand(() -> m_NeckWheelSubsystem.stop()));
-
-        // driver.leftTrigger().whileTrue(new InstantCommand(() -> m_MiddleWheelSubsystem.reverse()));
-        //driver.leftBumper().whileTrue(new InstantCommand( () -> m_MiddleWheelSubsystem.start()));
-        // driver.leftBumper().and(driver.leftTrigger()).whileFalse(new InstantCommand(() -> m_MiddleWheelSubsystem.stop()));
-        // //driver.leftBumper().whileFalse(new InstantCommand( () -> m_MiddleWheelSubsystem.stop()));
-        
-         // Reset the field-centric heading on left bumper press.
-         driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-        
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
-        return autoChooser.getSelected();
+
+        // Edit made by JS - 2026-03-19 1440
+        //return autoChooser.getSelected();
+        return new InstantCommand(() -> {});
     }
 }
